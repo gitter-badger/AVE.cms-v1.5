@@ -1,0 +1,1 @@
+﻿CKEDITOR.skin.name="monoo_ave";

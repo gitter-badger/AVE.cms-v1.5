@@ -1,0 +1,86 @@
+.mod_liveeditor_activated, .mod_liveeditor_deactivated, .mod_liveeditor_m_field, .mod_liveeditor_sm_field{font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 13px; color:#464A55; text-decoration:none; }
+.mod_liveeditor_copy{margin-top:10px;}
+.mod_le_video, .mod_le_videos{font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 16px; cursor:pointer; color:#464A55; text-decoration:none; background:url(../images/vl.gif); background-repeat:no-repeat; background-position:0px 2px; padding-left:10px;}
+.mod_le_video:hover, .mod_le_videos:hover, .mod_le_col:hover { border-bottom:#4e4f50 1px dotted }
+.vlw {background:url(../images/vlw.gif); background-repeat:no-repeat; background-position:10px 2px;}
+
+/* Стили настройки панели управления (toolbar) */
+
+.mod_li_dv_2, .mod_li_dv_1  {float:right; padding:6px 0px 10px 8px; width:943px; height:100px; background:url(../images/bg_m.gif); background-position:0px 0px; background-repeat:repeat-x;}
+.mod_li_dv_real {float:right; padding:6px 0px 10px 8px; width:888px; height:100px; background:url(../images/bg_m.gif); background-position:0px 0px; background-repeat:repeat-x; overflow:hidden;}
+.mod_le_drag_ul ul { list-style-type: none; margin:0px; padding:0px; }
+.mod_le_drag_ul li { float:left; padding:3px;  }
+.mod_le_drag_ul	li div { width:29px; height:25px; border:solid 1px black; background-color:#E0E0E0; text-align:center; padding-top:1px; }
+.placeHolder div { background-color:white!important; border:dashed 1px gray !important; }
+/* END  Стили настройки панели управления (toolbar) */
+
+.mod_li_reset{font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 13px; cursor:pointer; text-decoration:none;  padding: 0px 2px 1px 2px; margin-top:5px; margin-bottom:-5px; margin-left:5px; margin-right:15px; float:right; width:112px; text-align:center; }
+.title_btn_mod_li_real_toolbar { float:right; margin-right:10px; margin-top:7px; font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 13px; color:#464A55;}
+.btn_mod_li_real_toolbar { float:right; margin-right:10px; margin-top:8px;}
+.tpl_reg {font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 13px; color:#797979; text-align:center;}
+.di_reg { width:500px;}
+.li_system_set {font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 11px; color:#464A55; line-height:12px;}
+.li_system_h5 { margin-bottom:5px; padding-left:10px; background:url(../images/lili.png) no-repeat; background-position:0px 8px;}
+.li_system_span {font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 13px; color:#464A55;}
+.li_css_help {width:25px; height:25px; background:url(../images/help.png) no-repeat; background-position:0px 0px; cursor:pointer;}
+.li_sys_body {background:url(../images/page-bg.png) repeat;}
+#li_system_modal { padding:15px;}
+#li_system_modal p {font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 14px; color:#464A55;text-shadow: #fff 1px 1px 1px;}
+
+.Registr {width:920px; font-family: 'Cuprum', sans-serif; font-weight: normal; font-size: 13px; color:#797979; margin-top:8px; margin-left:12px; }
+.form_registr {float:right; margin-left:0px; padding:0px;}
+.input_registr {width:190px;height:18px; margin-right:10px; padding:1px; }
+.form_registr_t { width:400px;}
+.input_registr_t {}
+.form_delete{ float:right;}
+
+.BRK { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnBRK.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Bold { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnBold.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Italic { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnItalic.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Underline { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnUnderline.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Strikethrough { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnStrikethrough.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Superscript { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnSuperscript.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Subscript { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnSubscript.gif); background-position:0px 0px; background-repeat:no-repeat}
+.ForeColor { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnForeColor.gif); background-position:0px 0px; background-repeat:no-repeat}
+.BackColor { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnBackColor.gif); background-position:0px 0px; background-repeat:no-repeat}
+.RemoveFormat { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnRemoveFormat.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Paragraph { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnParagraph.gif); background-position:0px 0px; background-repeat:no-repeat}
+.FontName { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnFontName.gif); background-position:0px 0px; background-repeat:no-repeat}
+.FontSize { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnFontSize.gif); background-position:0px 0px; background-repeat:no-repeat}
+.FontDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnFont.gif); background-position:0px 0px; background-repeat:no-repeat}
+.TextDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnText.gif); background-position:0px 0px; background-repeat:no-repeat}
+.CompleteTextDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnTextr.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Quote { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnQuote.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Paste { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnPaste.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Styles { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnStyleSelect.gif); background-position:0px 0px; background-repeat:no-repeat}
+.JustifyLeft { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnLeft.gif); background-position:0px 0px; background-repeat:no-repeat}
+.JustifyCenter { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnCenter.gif); background-position:0px 0px; background-repeat:no-repeat}
+.JustifyRight { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnRight.gif); background-position:0px 0px; background-repeat:no-repeat}
+.JustifyFull { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnFull.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Absolute { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnAbsolute.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Bullets { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnList.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Numbering { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnNumber.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Indent { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnIndent.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Outdent { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnOutdent.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Table { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnTable.gif); background-position:0px 0px; background-repeat:no-repeat}
+.TableDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnTableEdit.gif); background-position:0px 0px; background-repeat:no-repeat}
+.FlashDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnFlash.gif); background-position:0px 0px; background-repeat:no-repeat}
+.LinkDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnHyperlink.gif); background-position:0px 0px; background-repeat:no-repeat}
+.ImageDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnImage.gif); background-position:0px 0px; background-repeat:no-repeat}
+.YoutubeDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnYoutubeVideo.gif); background-position:0px 0px; background-repeat:no-repeat}
+.CharsDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnSymbol.gif); background-position:0px 0px; background-repeat:no-repeat}
+.SearchDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnSearch.gif); background-position:0px 0px; background-repeat:no-repeat}
+.SourceDialog { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnSource.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Emoticons { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnEmoticons.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Line { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnLine.gif); background-position:0px 0px; background-repeat:no-repeat}
+.InternalLink { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnInternalLink.gif); background-position:0px 0px; background-repeat:no-repeat}
+.CustomObject { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnCustomObject.gif); background-position:0px 0px; background-repeat:no-repeat}
+.CustomTag { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnCustomTag.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Undo { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnUndo.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Redo { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnRedo.gif); background-position:0px 0px; background-repeat:no-repeat}
+.ClearAll { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnDelete.gif); background-position:0px 0px; background-repeat:no-repeat}
+.FullScreen { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnFullScreen.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Snippets { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnContentBlock.gif); background-position:0px 0px; background-repeat:no-repeat}
+.Preview { width:29px; height:25px; background:url(/admin/liveeditor/LiveEditor/scripts/icons/btnPreview.gif); background-position:0px 0px; background-repeat:no-repeat}
+
+.Absolute:hover, .BRK:hover, .Bold:hover, .Italic:hover, .Underline:hover, .Strikethrough:hover, .Superscript:hover, .Subscript:hover, .ForeColor:hover, .BackColor:hover, .RemoveFormat:hover, .Paragraph:hover, .FontName:hover, .FontSize:hover, .FontDialog:hover, .TextDialog:hover, .CompleteTextDialog:hover, .Quote:hover, .Paste:hover, .Styles:hover, .JustifyLeft:hover, .JustifyCenter:hover, .JustifyRight:hover, .JustifyFull:hover, .Absolute:hover, .Bullets:hover, .Numbering:hover, .Indent:hover, .Outdent:hover, .Table:hover, .TableDialog:hover, .FlashDialog:hover, .LinkDialog:hover, .ImageDialog:hover, .YoutubeDialog:hover, .CharsDialog:hover,  .SearchDialog:hover, .SourceDialog:hover, .Emoticons:hover, .Line:hover, .InternalLink:hover, .CustomObject:hover, .CustomTag:hover, .Undo:hover, .Redo:hover, .ClearAll:hover, .FullScreen:hover, .Snippets:hover, .Preview:hover {background-position:0px -50px;}

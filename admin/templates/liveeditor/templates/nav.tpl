@@ -1,0 +1,1 @@
+<li><a {if $smarty.request.do=='liveeditor'}class="active"{else}{/if} href="index.php?do=liveeditor&cp={$sess}"><span>{#MAIN_LIVEEDITOR#}</span></a></li>

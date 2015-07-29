@@ -1,0 +1,1 @@
+<li><a {if $smarty.request.do=='finder'}class="active"{else}{/if}href="index.php?do=finder&cp={$sess}"><span>Файловый менеджер</span></a></li>
