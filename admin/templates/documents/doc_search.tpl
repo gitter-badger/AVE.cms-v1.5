@@ -91,6 +91,7 @@
 	{/if}{if $smarty.request.CKEditor}<input type="hidden" name="CKEditor" value="{$smarty.request.CKEditor}" />
 	{/if}{if $smarty.request.CKEditorFuncNum}<input type="hidden" name="CKEditorFuncNum" value="{$smarty.request.CKEditorFuncNum}" />
 	{/if}{if $smarty.request.langCode}<input type="hidden" name="langCode" value="{$smarty.request.langCode}" />
+	{/if}{if $smarty.request.function}<input type="hidden" name="function" value="{$smarty.request.function}" />
 	{/if}<input type="hidden" name="TimeSelect" value="1" />
 
 <div class="widget first">
@@ -140,6 +141,20 @@
 				</select>
 			</td>
 		</tr>
+
+		{if $smarty.request.rubric_id == 7}
+		<tr>
+			<td><strong>Каталог:</strong></td>
+			<td colspan="3">{$catalog}</td>
+			<td><strong>Артикул:</strong></td>
+			<td><input style="width:100%" type="text" name="article" value="{$smarty.request.article|escape|stripslashes}" placeholder="Артикул" /></td>
+		</tr>
+		<tr>
+			<td><strong>Производитель:</strong></td>
+			<td>{$brand}</td>
+			<td colspan="4"></td>
+		</tr>
+		{/if}
 
 		<tr>
 			<td colspan="6">

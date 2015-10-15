@@ -187,6 +187,37 @@ class AVE_Document
 		$ex_docstatus = '';
 		$navi_docstatus = '';
 
+		$AVE_Template->assign('catalog', get_field_catalog(7,'search'));
+
+		$brand = $this->_documentFieldGet('doc_from_rub',$_REQUEST['brand'], 43, 5);
+		$brand = str_replace(array('<select name="feld[43]" style="width: 400px;">'), array('<select name="brand"><option value="">Выберите производителя</option>'), $brand);
+		$AVE_Template->assign('brand', $brand);
+
+		if ($_REQUEST['catalog'] || $_REQUEST['article'] || $_REQUEST['brand'])
+		{
+			$_REQUEST['rubric_id'] = 7;
+			if ($_REQUEST['catalog'])
+			{
+				require_once(BASE_DIR . '/modules/catalog/class.catalog.php');
+				$catalog = new Catalog;
+				$items = $catalog->getChildrenIds($_REQUEST['catalog']);
+				$items[] = $_REQUEST['catalog'];
+				$sql_join_cat = " LEFT JOIN " . PREFIX . "_document_fields AS df_cat ON doc.Id = df_cat.document_id ";
+				$where = "df_cat.field_value LIKE '%|" . implode("|%' OR df_cat.field_value LIKE '%|",$items) . "|%'";
+				$sql_where_cat = " AND (df_cat.rubric_field_id = '18' AND (" . $where . ")) ";
+			}
+			if ($_REQUEST['article'])
+			{
+				$sql_join_art = " LEFT JOIN " . PREFIX . "_document_fields AS df_art ON doc.Id = df_art.document_id ";
+				$sql_where_art = " AND (df_art.rubric_field_id = '44' AND df_art.field_value LIKE '%" . $_REQUEST['article'] . "%') ";
+			}
+			if ($_REQUEST['brand'])
+			{
+				$sql_join_brand = " LEFT JOIN " . PREFIX . "_document_fields AS df_brand ON doc.Id = df_brand.document_id ";
+				$sql_where_brand = " AND (df_brand.rubric_field_id = '43' AND df_brand.field_value = '" . (int)$_REQUEST['brand'] . "') ";
+			}
+		}
+
 		// Если в запросе пришел параметр на поиск документа по названию
 		if (!empty($_REQUEST['QueryTitel']))
 		{
@@ -301,6 +332,9 @@ class AVE_Document
 			SELECT COUNT(doc.Id)
 			FROM " . PREFIX . "_documents as doc
 			". @$ex_db ."
+			" . $sql_join_cat . "
+			" . $sql_join_art . "
+			" . $sql_join_brand . "
 			WHERE 1
 			" . $ex_delete . "
 			" . $ex_time . "
@@ -308,6 +342,9 @@ class AVE_Document
 			" . $ex_rub . "
 			" . $ex_docstatus . "
 			" . $w_id . "
+			" . $sql_where_cat . "
+			" . $sql_where_art . "
+			" . $sql_where_brand . "
 		")->GetCell();
 
 		// Определяем лимит документов, который будет показан на 1 странице
@@ -458,6 +495,9 @@ class AVE_Document
 				rub.rubric_admin_teaser_template
 			FROM " . PREFIX . "_documents as doc
 			LEFT JOIN " . PREFIX . "_rubrics AS rub ON rub.Id = doc.rubric_id
+			" . $sql_join_cat . "
+			" . $sql_join_art . "
+			" . $sql_join_brand . "
 
 			WHERE 1
 			" . $ex_rub . "
@@ -466,6 +506,9 @@ class AVE_Document
 			" . $ex_titel . "
 			" . $ex_docstatus . "
 			" . $w_id . "
+			" . $sql_where_cat . "
+			" . $sql_where_art . "
+			" . $sql_where_brand . "
 			" . $db_sort . "
 			LIMIT " . $start . "," . $limit . "
 		";
@@ -584,6 +627,10 @@ class AVE_Document
 		$link .= (isset($_REQUEST['langCode']) && !empty($_REQUEST['langCode'])) ? '&langCode='.$_REQUEST['langCode'] : '';
 		$link .= (isset($_REQUEST['CKEditor']) && !empty($_REQUEST['CKEditor'])) ? '&CKEditor='.$_REQUEST['CKEditor'] : '';
 		$link .= (isset($_REQUEST['CKEditorFuncNum']) && $_REQUEST['CKEditorFuncNum'] == 1) ? '&CKEditorFuncNum=1' : '';
+
+		$link .= (isset($_REQUEST['brand'])) ? '&brand='.$_REQUEST['brand'] : '';
+		$link .= (isset($_REQUEST['catalog'])) ? '&catalog='.$_REQUEST['catalog'] : '';
+		$link .= (isset($_REQUEST['article'])) ? '&article='.$_REQUEST['article'] : '';
 
 		$AVE_Template->assign('link', $link);
 
@@ -1063,7 +1110,7 @@ class AVE_Document
 							SET
 								rubric_id                 = '" . $rubric_id . "',
 								document_parent           = '" . (int)$data['document_parent'] . "',
-								document_title            = '" . addslashes(htmlspecialchars(clean_no_print_char($data['doc_title']), ENT_QUOTES)) . "',
+								document_title            = '" . htmlspecialchars(clean_no_print_char($data['doc_title']), ENT_QUOTES) . "',
 								document_breadcrum_title  = '" . htmlspecialchars(clean_no_print_char($breadcrum_title), ENT_QUOTES) . "',
 								document_alias            = '" . $data['document_alias'] . "',
 								document_alias_history    = '" . $data['document_alias_log'] . "',
@@ -1072,8 +1119,8 @@ class AVE_Document
 								document_changed          = '" . $data["document_changed"] . "',
 								$author
 								document_in_search        = '" . $search . "',
-								document_meta_keywords    = '" . addslashes(htmlspecialchars(clean_no_print_char($data['document_meta_keywords']), ENT_QUOTES)) . "',
-								document_meta_description = '" . addslashes(htmlspecialchars(clean_no_print_char($data['document_meta_description'], ENT_QUOTES))) . "',
+								document_meta_keywords    = '" . htmlspecialchars(clean_no_print_char($data['document_meta_keywords']), ENT_QUOTES) . "',
+								document_meta_description = '" . htmlspecialchars(clean_no_print_char($data['document_meta_description']), ENT_QUOTES) . "',
 								document_meta_robots      = '" . $data['document_meta_robots'] . "',
 								document_status           = '" . $data['document_status'] . "',
 								document_linked_navi_id   = '" . (int)$data['document_linked_navi_id'] . "',
@@ -1415,8 +1462,11 @@ class AVE_Document
 					$linked_id = @unserialize($linked_id);
 
 					$document_alias = array();
-					if ($linked_id) {
-						foreach ($linked_id as $linked_id) {
+
+					if ($linked_id)
+					{
+						foreach ($linked_id as $linked_id)
+						{
 							$sql = $AVE_DB->Query("
 								SELECT doc.document_alias, doc.document_title, doc.document_breadcrum_title, doc.Id, rub.rubric_title
 								FROM " . PREFIX . "_documents as doc
@@ -1708,8 +1758,10 @@ class AVE_Document
 					// Формируем ряд переменных и передаем их в шаблон для вывода
 					$document->fields = $fields_list;
 					$document->count_groups = count($fields_list);
-					$document->document_title = stripslashes(htmlspecialchars_decode($document->document_title));
-					$document->document_breadcrum_title = stripslashes(htmlspecialchars_decode($document->document_breadcrum_title));
+					$document->document_title = htmlspecialchars_decode(stripslashes(html_entity_decode($document->document_title)));
+					$document->document_meta_keywords = htmlspecialchars_decode(stripslashes(html_entity_decode($document->document_meta_keywords)));
+					$document->document_meta_description = htmlspecialchars_decode(stripslashes(html_entity_decode($document->document_meta_description)));
+					$document->document_breadcrum_title = htmlspecialchars_decode(stripslashes(html_entity_decode($document->document_breadcrum_title)));
 					$document->document_alias_breadcrumb = rewrite_link('index.php?id=' . $document->Id . '&amp;doc=' . (empty($document->document_alias) ? prepare_url($document->document_title) : $document->document_alias));
 					$document->rubric_title = $AVE_Rubric->rubricNameByIdGet($document->rubric_id)->rubric_title;
 					$document->rubric_url_prefix = $AVE_Rubric->rubricNameByIdGet($document->rubric_id)->rubric_alias;
@@ -1764,8 +1816,8 @@ class AVE_Document
 							{
 								$document_alias[$row->rubric_title][] = array(
 									'document_alias'=>$row->document_alias,
-									'document_title'=>stripslashes(htmlspecialchars_decode($row->document_title)),
-									'document_breadcrum_title'=>stripslashes(htmlspecialchars_decode($row->document_breadcrum_title)),
+									'document_title'=>htmlspecialchars_decode(stripslashes(html_entity_decode($row->document_title))),
+									'document_breadcrum_title'=>htmlspecialchars_decode(stripslashes(html_entity_decode($row->document_breadcrum_title))),
 									'Id'=>$row->Id
 								);
 							}

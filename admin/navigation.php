@@ -40,40 +40,82 @@ switch ($_REQUEST['action'])
 		}
 		break;
 
-	case 'templates':
-		if (check_permission_acp('navigation_edit'))
-		{
-			require(BASE_DIR . '/class/class.user.php');
-			$AVE_User = new AVE_User;
-			$AVE_Navigation->navigationEdit($_REQUEST['id']);
-		}
-		break;
-
 	case 'copy':
 		if (check_permission_acp('navigation_edit'))
 		{
-			$AVE_Navigation->navigationCopy($_REQUEST['id']);
+			$AVE_Navigation->navigationCopy((int)$_REQUEST['navigation_id']);
 		}
 		break;
 
 	case 'delete':
 		if (check_permission_acp('navigation_edit'))
 		{
-			$AVE_Navigation->navigationDelete($_REQUEST['id']);
+			$AVE_Navigation->navigationDelete((int)$_REQUEST['navigation_id']);
+		}
+		break;
+
+	case 'templates':
+		if (check_permission_acp('navigation_edit'))
+		{
+			require(BASE_DIR . '/class/class.user.php');
+			$AVE_User = new AVE_User;
+			$AVE_Navigation->navigationEdit((int)$_REQUEST['navigation_id']);
 		}
 		break;
 
 	case 'entries':
 		if (check_permission_acp('navigation_edit'))
 		{
-			$AVE_Navigation->navigationItemList($_REQUEST['id']);
+			$AVE_Navigation->navigationItemList((int)$_REQUEST['navigation_id']);
 		}
 		break;
 
-	case 'quicksave':
+	case 'sorting':
 		if (check_permission_acp('navigation_edit'))
 		{
-			$AVE_Navigation->navigationItemEdit($_REQUEST['id']);
+			$AVE_Navigation->navigationSort((int)$_REQUEST['navigation_id']);
+		}
+		break;
+
+	case 'itemedit':
+		if (check_permission_acp('navigation_edit'))
+		{
+			$AVE_Navigation->navigationItemEdit((int)$_REQUEST['navigation_item_id']);
+		}
+		break;
+
+	case 'itemeditid':
+		if (check_permission_acp('navigation_edit'))
+		{
+			$AVE_Navigation->getDocumentById((int)$_REQUEST['doc_id']);
+		}
+		break;
+
+	case 'saveitem':
+		if (check_permission_acp('navigation_edit'))
+		{
+			$AVE_Navigation->navigationItemSave((int)$_REQUEST['navigation_item_id']);
+		}
+		break;
+
+	case 'itemnew':
+		if (check_permission_acp('navigation_edit'))
+		{
+			$AVE_Navigation->navigationItemNew((int)$_REQUEST['navigation_id']);
+		}
+		break;
+
+	case 'itemestatus':
+		if (check_permission_acp('navigation_edit'))
+		{
+			$AVE_Navigation->navigationItemStatus((int)$_REQUEST['navigation_item_id'], $_REQUEST['status']);
+		}
+		break;
+
+	case 'getitem':
+		if (check_permission_acp('navigation_edit'))
+		{
+			$AVE_Navigation->navigationItemGet((int)$_REQUEST['navigation_item_id']);
 		}
 		break;
 }

@@ -35,7 +35,7 @@ class Debug {
 	 *
 	 * @param mixed $var любая переменная
 	 */
-	public static function _echo($var)
+	public static function _echo($var, $exit = false)
 	{
 		$backtrace = debug_backtrace();
 
@@ -74,6 +74,57 @@ class Debug {
 		';
 
 		echo $var_dump;
+
+		if ($exit) exit;
+	}
+
+
+	/**
+	 * Функция для вывода переменной (для отладки)
+	 *
+	 * @param mixed $var любая переменная
+	 */
+	public static function _print($var, $exit = false)
+	{
+		$backtrace = debug_backtrace();
+
+		$backtrace = $backtrace[0];
+
+		$fh = fopen($backtrace['file'], 'r');
+
+		$line = 0;
+
+		while (++$line <= $backtrace['line'])
+		{
+			$code = fgets($fh);
+		}
+
+		fclose($fh);
+
+		preg_match('/' . __FUNCTION__ . '\s*\((.*)\)\s*;/u', $code, $name);
+
+		ob_start();
+
+		print_r($var);
+
+		$var_dump = htmlspecialchars(ob_get_contents());
+
+		ob_end_clean();
+
+		$var_dump = '
+			<div style="border: 1px solid #23b7e5; margin: 5px; font-size: 11px; font-family: Consolas, Verdana, Arial;">
+				<div style="background:#23b7e5; color: #000; margin: 0; padding: 5px;">
+					print_r(<strong>' . trim($name[1]) . '</strong>) - ' . self::_trace() .
+				'</div>
+				<pre style="background:#f0f0f0; color: #000; margin: 0; padding: 5px;">'
+				. $var_dump .
+				'</pre>
+			</div>
+		';
+
+		echo $var_dump;
+
+		if ($exit) exit;
 	}
 
 
@@ -82,7 +133,7 @@ class Debug {
 	 *
 	 * @param mixed $var любая переменная
 	 */
-	public static function _exp($var)
+	public static function _exp($var, $exit = false)
 	{
 		$backtrace = debug_backtrace();
 
@@ -113,7 +164,7 @@ class Debug {
 		$var_dump = '
 			<div style="border: 1px solid #bbb; margin: 5px; font-size: 11px; font-family: Consolas, Verdana, Arial;">
 			<div style="background:#ccc; color: #000; margin: 0; padding: 5px;">var_export(<strong>'
-			. trim($name[1]) . '</strong>) - ' . self::_trace() .
+			. trim($name[1]) . '</strong>) - ' . Debug::_trace() .
 			'</div>
 			<pre style="background:#f0f0f0; color: #000; margin: 0; padding: 5px;">'
 			. $var_export .
@@ -122,6 +173,8 @@ class Debug {
 		';
 
 		echo $var_dump;
+
+		if ($exit) exit;
 	}
 
 

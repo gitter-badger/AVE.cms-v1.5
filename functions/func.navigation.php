@@ -20,11 +20,11 @@
 function parse_navigation($navi_tag)
 {
 	global $AVE_DB, $AVE_Core;
-	
+
 	$gen_time = microtime();
 
 	// извлекаем id из аргумента
-	$navi_id  = (int)$navi_tag[1];
+	$navi_id = (int)$navi_tag[1];
 
 	// извлекаем level из аргумента
 	$navi_print_level = $navi_tag[2];
@@ -32,16 +32,17 @@ function parse_navigation($navi_tag)
 	// получаем меню навигации по id,
 	// и если такой не существует, выводим сообщение
 	$navi_menu = get_navigations($navi_id);
+
 	if (!$navi_menu)
 	{
 		echo 'Menu ', $navi_id, ' not found!';
 		return;
 	}
 
-	// выставляем гостевую группу по дефолту 
+	// выставляем гостевую группу по дефолту
 	if (!defined('UGROUP')) define('UGROUP', 2);
 	// выходим, если навиг. не предназначена для текущей группы
-	if (!in_array(UGROUP, $navi_menu->navi_user_group)) return;
+	if (!in_array(UGROUP, $navi_menu->user_group)) return;
 
 	// Находим активный пункт (связь текущего открытого документа и навигации). Нас интересуют:
 	//		1) документы, которые сами связаны с пунктом меню
@@ -59,47 +60,54 @@ function parse_navigation($navi_tag)
 	$alias = ltrim($AVE_Core->curentdoc->document_alias);
 	// запрос для выборки по текущему алиасу
 	$sql_doc_active_alias = '';
+
 	if ($AVE_Core->curentdoc->Id == $doc_active_id)
 	{
 		$sql_doc_active_alias = "
-			OR nav.document_alias = '" . $alias . "'
-			OR nav.document_alias = '/" . $alias . "'
-			OR nav.document_alias = '" . $alias . URL_SUFF . "'
-			OR nav.document_alias = '/" . $alias . URL_SUFF . "'
+			OR nav.alias = '" . $alias . "'
+			OR nav.alias = '/" . $alias . "'
+			OR nav.alias = '" . $alias . URL_SUFF . "'
+			OR nav.alias = '/" . $alias . URL_SUFF . "'
 		";
 	}
 
 	$navi_active = $AVE_DB->Query("
 		SELECT CONCAT_WS(
 				';',
-				CONCAT_WS(',', nav.Id, nav.parent_id, nav2.parent_id),
-				CONCAT_WS(',', nav.navi_item_level),
-				nav.Id
+				CONCAT_WS(',', nav.navigation_item_id, nav.parent_id, nav2.parent_id),
+				CONCAT_WS(',', nav.level),
+				nav.navigation_item_id
 			)
 		FROM
 			" . PREFIX . "_navigation_items AS nav
 		JOIN
 			" . PREFIX . "_documents AS doc
 		LEFT JOIN
-			" . PREFIX . "_navigation_items AS nav2 ON nav2.Id = nav.parent_id
-		WHERE nav.navi_item_status = 1
-			AND nav.navi_id = " . $navi_id . "
-			AND doc.Id = " . $doc_active_id . "
-			AND (
-				nav.navi_item_link = 'index.php?id=" . $doc_active_id . "'" . 
+			" . PREFIX . "_navigation_items AS nav2
+			ON
+				nav2.navigation_item_id = nav.parent_id
+		WHERE
+			nav.status = 1
+		AND
+			nav.navigation_id = " . $navi_id . "
+		AND
+			doc.Id = " . $doc_active_id . "
+		AND (
+				nav.document_id = '" . $doc_active_id . "'" .
 				$sql_doc_active_alias . "
-				OR nav.Id = doc.document_linked_navi_id
+				OR
+					nav.navigation_item_id = doc.document_linked_navi_id
 			)
 	")->GetCell();
 
 	$navi_active = @explode(';',$navi_active);
 
 	// готовим 2 переменные с путём
-	if ($navi_active[0]) $navi_active_way = @explode(',',$navi_active[0]);
+	if ($navi_active[0]) $navi_active_way = @explode(',', $navi_active[0]);
 
 	$navi_active_way[] = '0';
 
-	$navi_active_way_str = implode(',',$navi_active_way);
+	$navi_active_way_str = implode(',', $navi_active_way);
 
 	// текущий уровень
 	$navi_active_level = (int)max(@explode(',', (isset($navi_active[1]) ? (int)$navi_active[1] : 0)))+1;
@@ -112,13 +120,13 @@ function parse_navigation($navi_tag)
 	$sql_navi_active = '';
 	if($navi_print_level)
 	{
-		$sql_navi_level = ' AND navi_item_level IN (' . $navi_print_level . ') ';
+		$sql_navi_level = ' AND level IN (' . $navi_print_level . ') ';
 		$sql_navi_active = ' AND parent_id IN(' . $navi_active_way_str . ') ';
 	}
 	// обычное использование навигации
 	else
 	{
-		switch ($navi_menu->navi_expand_ext)
+		switch ($navi_menu->expand_ext)
 		{
 			// все уровни
 			case 1:
@@ -133,21 +141,26 @@ function parse_navigation($navi_tag)
 
 			// только текущий уровень
 			case 2:
-				$sql_navi_level = ' AND navi_item_level = ' . $navi_active_level . ' ';
+				$sql_navi_level = ' AND level = ' . $navi_active_level . ' ';
 				$navi_parent = $navi_active_id;
 				break;
 		}
 	}
 
+
 	// запрос пунктов меню
 	$sql_navi_items = $AVE_DB->Query("
 		SELECT *
-		FROM " . PREFIX . "_navigation_items
-		WHERE navi_item_status = '1'
-		AND navi_id = '" . $navi_id . "'" .
+		FROM
+			" . PREFIX . "_navigation_items
+		WHERE
+			status = '1'
+		AND
+			navigation_id = '" . $navi_id . "'" .
 		$sql_navi_level .
 		$sql_navi_active . "
-		ORDER BY navi_item_position ASC
+		ORDER BY
+			position ASC
 	");
 
 	$navi_items = array();
@@ -165,30 +178,31 @@ function parse_navigation($navi_tag)
 	// Парсим теги в шаблонах пунктов
 	$navi_item_tpl = array(
 		1 =>  array(
-			'inactive'	=> $navi_menu->navi_level1,
-			'active'	=> $navi_menu->navi_level1active
+			'inactive'	=> $navi_menu->level1,
+			'active'	=> $navi_menu->level1_active
 		),
 		2 =>  array(
-			'inactive'	=> $navi_menu->navi_level2,
-			'active'	=> $navi_menu->navi_level2active
+			'inactive'	=> $navi_menu->level2,
+			'active'	=> $navi_menu->level2_active
 		),
 		3 =>  array(
-			'inactive'	=> $navi_menu->navi_level3,
-			'active'	=> $navi_menu->navi_level3active
+			'inactive'	=> $navi_menu->level3,
+			'active'	=> $navi_menu->level3_active
 		)
 	);
 
 	// запускаем рекурсивную сборку навигации
-	if ($navi_items) $navi = printNavi($navi_menu,$navi_items,$navi_active_way,$navi_item_tpl,$navi_parent);
+	if ($navi_items) $navi = printNavi($navi_menu, $navi_items, $navi_active_way, $navi_item_tpl, $navi_parent);
 
 	// преобразуем все ссылке в коде
 	$navi = rewrite_link($navi);
+
 	// удаляем переводы строк и табуляции
 	$navi = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $navi);
 	$navi = str_replace(array("\n","\r"),'',$navi);
 
 	$gen_time = microtime()-$gen_time;
-	$GLOBALS['block_generate'][] = array('NAVIGATION_'.$navi_id=>$gen_time);
+	$GLOBALS['block_generate'][] = array('NAVIGATION_'.$navi_id => $gen_time);
 
 	return $navi;
 }
@@ -204,49 +218,60 @@ function parse_navigation($navi_tag)
  * @param int		$parent (исследуемый родитель, изначально 0 - верхний уровень)
  * @return string	$navi - готовый код навигации
  */
-function printNavi($navi_menu,$navi_items,$navi_active_way,$navi_item_tpl,$parent=0)
+function printNavi($navi_menu, $navi_items, $navi_active_way, $navi_item_tpl, $parent = 0)
 {
 	// выясняем уровень
-	$navi_item_level = $navi_items[$parent][0]['navi_item_level'];
+	$navi_item_level = $navi_items[$parent][0]['level'];
 
 	// собираем каждый пункт в данном родителе -> в переменной $item
-	
+
 	foreach ($navi_items[$parent] as $row)
 	{
 		// Проверяем пункт меню на принадлежность к "активному пути" и выбираем шаблон
-		$item = (in_array($row['Id'], $navi_active_way)) ? $navi_item_tpl[$navi_item_level]['active'] : $navi_item_tpl[$navi_item_level]['inactive'];
+		$item = (in_array($row['navigation_item_id'], $navi_active_way)) ? $navi_item_tpl[$navi_item_level]['active'] : $navi_item_tpl[$navi_item_level]['inactive'];
 
 		################### ПАРСИМ ТЕГИ ###################
 		// id
-		@$item = str_replace('[tag:linkid]', $row['Id'], $item);
+		@$item = str_replace('[tag:linkid]', $row['navigation_item_id'], $item);
 		// название
 		@$item = str_replace('[tag:linkname]', $row['title'], $item);
+		//Путь
+		$item = str_replace('[tag:path]', ABS_PATH, $item);
 		// ссылка
-		if (strpos($row['navi_item_link'], 'module=') === false && start_with('index.php?', $row['navi_item_link']))
+		if ($row['document_id'])
 		{
-			$item = str_replace('[tag:link]', $row['navi_item_link'] . "&amp;doc=" . ((!$row['document_alias']) ? prepare_url($row['title']) : $row['document_alias']), $item);
-			$item = str_ireplace('"//"','"/"',str_ireplace('///','/',rewrite_link($item)));
+			$item = str_replace('[tag:link]', 'index.php?id=' . $row['document_id'] . "&amp;doc=" . ((!$row['alias']) ? prepare_url($row['title']) : trim($row['alias'], '/')), $item);
+			$item = str_ireplace('"//"', '"/"', str_ireplace('///', '/', rewrite_link($item)));
+		} else {
+			$item = str_replace('[tag:link]', $row['alias'], $item);
 		}
-		else
-		{
-			$item = str_replace('[tag:link]', $row['navi_item_link'], $item);
-			if (start_with('www.', $row['navi_item_link'])) $item = str_replace('www.', 'http://www.', $item);
-		}
-		// target
-		$item = str_replace('[tag:target]', (empty($row['navi_item_target']) ? '_self' : $row['navi_item_target']), $item);
-		// описание
-		@$item = str_replace('[tag:desc]', stripslashes($row['navi_item_desc']), $item);
-		// изображение
-		@$item = str_replace('[tag:img]', stripslashes($row['navi_item_Img']), $item);
 
-		if ($row['navi_item_Img'] != ''){
-			@$img = explode(".", $row['navi_item_Img']);
-			@$row['Img_act'] = $img[0]."_act.".$img[1];
-			@$item = str_replace('[tag:img_act]', stripslashes($row['Img_act']), $item);
+		if (start_with('www.', $row['alias']))
+			$item = str_replace('www.', 'http://www.', $item);
+
+		// target
+		$item = str_replace('[tag:target]', (empty($row['target']) ? '_self' : $row['navi_item_target']), $item);
+		// описание
+		@$item = str_replace('[tag:desc]', stripslashes($row['description']), $item);
+		// изображение
+		@$item = str_replace('[tag:img]', stripslashes($row['image']), $item);
+
+		if ($row['image'] != '')
+		{
+			@$img = explode(".", $row['image']);
+			@$row['image_act'] = $img[0]."_act.".$img[1];
+			@$item = str_replace('[tag:img_act]', stripslashes($row['image_act']), $item);
 		}
-		if ($row['navi_item_Img_id'] != ''){
-			@$item = str_replace('[tag:img_id]', stripslashes($row['navi_item_Img_id']), $item);
+		if ($row['css_id'] != '')
+		{
+			@$item = str_replace('[tag:css_id]', stripslashes($row['css_id']), $item);
 		}
+
+		if ($row['css_class'] != '')
+		{
+			@$item = str_replace('[tag:css_class]', stripslashes($row['css_class']), $item);
+		}
+
 
 		################### /ПАРСИМ ТЕГИ ##################
 
@@ -265,10 +290,10 @@ function printNavi($navi_menu,$navi_items,$navi_active_way,$navi_item_tpl,$paren
 		}
 
 		// Если есть подуровень, то заново запускаем для него функцию и вставляем вместо тега
-		if (!empty($navi_items[$row['Id']]))
+		if (!empty($navi_items[$row['navigation_item_id']]))
 		{
-			$item_sublevel = printNavi($navi_menu,$navi_items,$navi_active_way,$navi_item_tpl,$row['Id']);
-			$item = @str_replace($tag,$item_sublevel,$item);
+			$item_sublevel = printNavi($navi_menu, $navi_items, $navi_active_way, $navi_item_tpl, $row['navigation_item_id']);
+			$item = @str_replace($tag, $item_sublevel, $item);
 		}
 		// Если нет подуровня, то удаляем тег
 		else $item = @str_replace(@$tag,'',$item);
@@ -282,13 +307,13 @@ function printNavi($navi_menu,$navi_items,$navi_active_way,$navi_item_tpl,$paren
 	switch ($navi_item_level)
 	{
 		case 1 :
-			$navi = str_replace("[tag:content]",$navi, $navi_menu->navi_level1begin);
+			$navi = str_replace("[tag:content]",$navi, $navi_menu->level1_begin);
 			break;
 		case 2 :
-			$navi = str_replace("[tag:content]",$navi, $navi_menu->navi_level2begin);
+			$navi = str_replace("[tag:content]",$navi, $navi_menu->level2_begin);
 			break;
 		case 3 :
-			$navi = str_replace("[tag:content]",$navi, $navi_menu->navi_level3begin);
+			$navi = str_replace("[tag:content]",$navi, $navi_menu->level3_begin);
 			break;
 	}
 
@@ -318,8 +343,8 @@ function get_navigations($id = null)
 
 		while ($row = $sql->FetchRow())
 		{
-			$row->navi_user_group = explode(',', $row->navi_user_group);
-			$navigations[$row->id] = $row;
+			$row->user_group = explode(',', $row->user_group);
+			$navigations[$row->navigation_id] = $row;
 		}
 	}
 
@@ -338,10 +363,10 @@ function check_navi_permission($id)
 {
 	$navigation = get_navigations($id);
 
-	if (empty($navigation->navi_user_group)) return false;
+	if (empty($navigation->user_group)) return false;
 
 	if (!defined('UGROUP')) define('UGROUP', 2);
-	if (!in_array(UGROUP, $navigation->navi_user_group)) return false;
+	if (!in_array(UGROUP, $navigation->user_group)) return false;
 
 	return true;
 }

@@ -505,6 +505,7 @@ $('#document_lang').change(function() {ldelim}
 				{include file='navigation/tree.tpl'}
 			</td>
 		</tr>
+
 		<tr>
 			<td>{#DOC_BREADCRUMB_TITLE#}</td>
 			<td colspan="3"><div class="pr12"><input class="mousetrap" name="doc_breadcrum_title" type="text" id="doc_breadcrum_title" size="40" value="{if $smarty.request.action == 'edit'}{$document->document_breadcrum_title|escape}{/if}" /></div></td>

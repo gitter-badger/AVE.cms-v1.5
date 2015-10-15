@@ -3,62 +3,77 @@
 {else}
 <div class="title"><h5>{#NAVI_SUB_TITLE3#}</h5></div>
 {/if}
-<div class="widget" style="margin-top: 0px;"><div class="body">{#NAVI_TIP_TEMPLATE2#}</div></div>
 
+<div class="widget" style="margin-top: 0px;">
+	<div class="body">{#NAVI_TIP_TEMPLATE2#}</div>
+</div>
 
 <div class="breadCrumbHolder module">
 	<div class="breadCrumb module">
-	    <ul>
+		<ul>
 			<li class="firstB"><a href="index.php" title="{#MAIN_PAGE#}">{#MAIN_PAGE#}</a></li>
-	        <li><a href="index.php?do=navigation&cp={$sess}" title="">{#NAVI_SUB_TITLE#}</a></li>
+			<li><a href="index.php?do=navigation&cp={$sess}" title="">{#NAVI_SUB_TITLE#}</a></li>
 			{if $smarty.request.action == 'new'}
-	        <li>{#NAVI_SUB_TITLE4#}</li>
+			<li>{#NAVI_SUB_TITLE4#}</li>
 			{else}
-	        <li>{#NAVI_SUB_TITLE3#}</li>
-	        <li><strong class="code">{$nav->navi_titel|escape}</strong></li>
+			<li>{#NAVI_SUB_TITLE3#}</li>
+			<li><strong class="code">{$navigation->title|escape}</strong></li>
 			{/if}
-	    </ul>
+		</ul>
 	</div>
 </div>
 
-<form name="navitemplate" id="navitemplate" method="post" action="{$formaction}" class="mainForm">
+<form name="navigation_template" id="navigation_template" method="post" action="{$form_action}" class="mainForm">
 
 <div class="widget first">
-<div class="head"><h5 class="iFrames">{#NAVI_SUB_TITLE3#}</h5><div class="num"><a class="basicNum" href="index.php?do=navigation&action=entries&cp={$sess}&id={$smarty.request.id}">{#NAVI_EDIT_ITEMS#}</a></div></div>
+	<div class="head">
+		<h5 class="iFrames">{#NAVI_SUB_TITLE3#}</h5>
+		<div class="num">
+			<a class="basicNum topDir" href="index.php?do=navigation&cp={$sess}">Вернуться к списку</a>
+		</div>
+		<div class="num">
+			<a class="greenNum" href="index.php?do=navigation&action=entries&navigation_id={$smarty.request.navigation_id}&cp={$sess}">{#NAVI_EDIT_ITEMS#}</a>
+		</div>
+	</div>
 
 	<table cellpadding="0" cellspacing="0" width="100%" class="tableStatic">
 		<tr class="noborder">
-			<td width="200"><strong>{#NAVI_TITLE#}</strong></td>
-			<td><input class="mousetrap" style="width:400px" name="navi_titel" type="text" id="navi_titel" value="{$nav->navi_titel|default:$smarty.request.NaviName|escape}"></td>
+			<td width="200">
+				<strong>{#NAVI_TITLE#}</strong>
+			</td>
+			<td>
+				<input class="mousetrap" style="width:400px" name="title" type="text" id="title" value="{$navigation->title|default:$smarty.request.navigation_title_new|escape}">
+			</td>
 		</tr>
 
 		<tr>
 			<td width="200"><strong>{#NAVI_PRINT_TYPE#}</strong></td>
 			<td>
-                <select name="navi_expand_ext" style="width: 300px;">
-                    <option value="1"{if $nav->navi_expand_ext==1} selected{/if}/>{#NAVI_EXPAND_ALL#}</option>
-                    <option value="0"{if $nav->navi_expand_ext==0} selected{/if}/>{#NAVI_EXPAND_WAY#}</option>
-                    <option value="2"{if $nav->navi_expand_ext==2} selected{/if}/>{#NAVI_EXPAND_LEVEL#}</option>
-                </select></td>
+				<select name="expand_ext" style="width: 300px;">
+					<option value="1"{if $navigation->expand_ext == 1} selected{/if}/>{#NAVI_EXPAND_ALL#}</option>
+					<option value="0"{if $navigation->expand_ext == 0} selected{/if}/>{#NAVI_EXPAND_WAY#}</option>
+					<option value="2"{if $navigation->expand_ext == 2} selected{/if}/>{#NAVI_EXPAND_LEVEL#}</option>
+				</select>
+			</td>
 		</tr>
 
 		<tr>
 			<td width="200"><strong>{#NAVI_GROUPS#}</strong></td>
 			<td>
-				<select class="mousetrap select" name="navi_user_group[]" multiple="multiple" size="5" style="width:300px">
+				<select class="mousetrap select" name="user_group[]" multiple="multiple" size="5" style="width:300px">
 					{if $smarty.request.action=='new'}
-						{foreach from=$row->AvGroups item=g}
-							<option value="{$g->user_group}" selected="selected">{$g->user_group_name|escape}</option>
+						{foreach from=$groups item=group}
+							<option value="{$group->user_group}" selected="selected">{$group->user_group_name|escape}</option>
 						{/foreach}
 					{else}
-						{foreach from=$nav->AvGroups item=g}
-							{assign var='sel' value=''}
-							{if $g->user_group}
-								{if (in_array($g->user_group, $nav->navi_user_group))}
-									{assign var='sel' value=' selected="selected"'}
+						{foreach from=$groups item=group}
+							{assign var='select' value=''}
+							{if $group->user_group}
+								{if (in_array($group->user_group, $navigation->user_group))}
+									{assign var='select' value=' selected="selected"'}
 								{/if}
 							{/if}
-							<option value="{$g->user_group}"{$sel}>{$g->user_group_name|escape}</option>
+							<option value="{$group->user_group}"{$select}>{$group->user_group_name|escape}</option>
 						{/foreach}
 					{/if}
 				</select>
@@ -68,21 +83,30 @@
 </div>
 
 <div class="widget first">
-<div class="head"><h5 class="iFrames">{#NAVI_LEVEL1#}</h5></div>
+
+	<div class="head">
+		<h5 class="iFrames">{#NAVI_LEVEL1#}</h5>
+	</div>
 
 	<table cellpadding="0" cellspacing="0" width="100%" class="tableStatic">
 		<tr class="noborder">
 			<td><strong>Шаблон уровня</strong><br />
-				<strong><a class="rightDir" style="cursor: pointer;" title="Тег для вставки пунктов" onclick="textSelection_1_1('[tag:content]','');">[tag:content]</a></strong></td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level1begin" rows="12" id="navi_level1tpl">{$nav->navi_level1begin|escape}</textarea></div></td>
+				<strong><a class="rightDir" style="cursor: pointer;" title="Тег для вставки пунктов" onclick="textSelection_1_1('[tag:content]','');">[tag:content]</a></strong>
+			</td>
+			<td>
+				<div class="pr12">
+					<textarea style="width:100%" name="level1_begin" rows="12" id="level1_tpl">{$navigation->level1_begin|escape}</textarea>
+				</div>
+			</td>
 		</tr>
-        <tr>
+
+		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_1('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_1('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_1('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_1('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_1('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_1('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_1('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_1('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_1('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -114,15 +138,20 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_1_2('[tag:img_id]','');">[tag:img_id]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Место вставки подуровня" onclick="textSelection_1_2('[tag:level:2]','');">[tag:level:2]</a></strong>
 			</td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level1" rows="12" id="navi_level1">{$nav->navi_level1|escape}</textarea></div></td>
+			<td>
+				<div class="pr12">
+					<textarea style="width:100%" name="level1" rows="12" id="level1">{$navigation->level1|escape}</textarea>
+				</div>
+			</td>
 		</tr>
+
 		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_2('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_2('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_2('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_2('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_2('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_2('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_2('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_2('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_2('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -140,6 +169,7 @@
 				<a href="javascript:void(0);" onclick="textSelection_1_2('\t', '');"><strong>TAB</strong></a>&nbsp;|
 			</td>
 		</tr>
+
 		<tr>
 			<td width="200">
 				<strong>{#NAVI_LINK_ACTIVE#}</strong><br />
@@ -153,15 +183,16 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_1_3('[tag:img_id]','');">[tag:img_id]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Место вставки подуровня" onclick="textSelection_1_3('[tag:level:2]','');">[tag:level:2]</a></strong>
 			</td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level1active" rows="12" id="navi_level1active">{$nav->navi_level1active|escape}</textarea></div></td>
+			<td><div class="pr12"><textarea style="width:100%" name="level1_active" rows="12" id="level1_active">{$navigation->level1_active|escape}</textarea></div></td>
 		</tr>
+
 		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_3('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_3('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_1_3('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_3('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_3('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_1_3('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_3('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_3('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_1_3('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -182,22 +213,33 @@
 	</table>
 </div>
 
-<div class="widget first">
-<div class="head"><h5 class="iFrames">{#NAVI_LEVEL2#}</h5></div>
 
+<div class="widget first">
+
+	<div class="head{if $navigation->level2_begin == ''} closed{/if}">
+		<h5 class="iFrames">{#NAVI_LEVEL2#}</h5>
+	</div>
+
+	<div style="display: block;">
 	<table cellpadding="0" cellspacing="0" width="100%" class="tableStatic">
 		<tr class="noborder">
-			<td><strong>Шаблон уровня</strong><br />
-				<strong><a class="rightDir" style="cursor: pointer;" title="Тег для вставки пунктов" onclick="textSelection_2_1('[tag:content]','');">[tag:content]</a></strong></td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level2begin" rows="12" id="navi_level2tpl">{$nav->navi_level2begin|escape}</textarea></div></td>
+			<td>
+				<strong>Шаблон уровня</strong><br />
+				<strong><a class="rightDir" style="cursor: pointer;" title="Тег для вставки пунктов" onclick="textSelection_2_1('[tag:content]','');">[tag:content]</a></strong>
+			</td>
+			<td>
+				<div class="pr12">
+					<textarea style="width:100%" name="level2_begin" rows="12" id="level2_tpl">{$navigation->level2_begin|escape}</textarea>
+				</div>
+			</td>
 		</tr>
-        <tr>
+		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_1('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_1('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_1('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_1('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_1('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_1('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_1('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_1('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_1('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -229,15 +271,17 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_2_2('[tag:img_id]','');">[tag:img_id]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Место вставки подуровня" onclick="textSelection_2_2('[tag:level:3]','');">[tag:level:3]</a></strong>
 			</td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level2" rows="12" id="navi_level2">{$nav->navi_level2|escape}</textarea></div></td>
+			<td>
+				<div class="pr12"><textarea style="width:100%" name="level2" rows="12" id="level2">{$navigation->level2|escape}</textarea></div>
+			</td>
 		</tr>
 		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_2('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_2('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_2('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_2('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_2('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_2('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_2('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_2('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_2('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -268,15 +312,15 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_2_3('[tag:img_id]','');">[tag:img_id]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Место вставки подуровня" onclick="textSelection_2_3('[tag:level:3]','');">[tag:level:3]</a></strong>
 			</td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level2active" rows="12" id="navi_level2active">{$nav->navi_level2active|escape}</textarea></div></td>
+			<td><div class="pr12"><textarea style="width:100%" name="level2_active" rows="12" id="level2_active">{$navigation->level2_active|escape}</textarea></div></td>
 		</tr>
 		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_3('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_3('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_2_3('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_3('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_3('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_2_3('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_3('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_3('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_2_3('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -295,24 +339,34 @@
 			</td>
 		</tr>
 	</table>
+	</div>
 </div>
 
-<div class="widget first">
-<div class="head"><h5 class="iFrames">{#NAVI_LEVEL3#}</h5></div>
 
+<div class="widget first">
+	<div class="head{if $navigation->level3_begin == ''} closed{/if}">
+		<h5 class="iFrames">{#NAVI_LEVEL3#}</h5>
+	</div>
+
+	<div style="display: block">
 	<table cellpadding="0" cellspacing="0" width="100%" class="tableStatic">
 		<tr class="noborder">
 			<td><strong>Шаблон уровня</strong><br />
-				<strong><a class="rightDir" style="cursor: pointer;" title="Тег для вставки пунктов" onclick="textSelection_3_1('[tag:content]','');">[tag:content]</a></strong></td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level3begin" rows="12" id="navi_level3tpl">{$nav->navi_level3begin|escape}</textarea></div></td>
+				<strong><a class="rightDir" style="cursor: pointer;" title="Тег для вставки пунктов" onclick="textSelection_3_1('[tag:content]','');">[tag:content]</a></strong>
+			</td>
+			<td>
+				<div class="pr12">
+					<textarea style="width:100%" name="level3_begin" rows="12" id="level3_tpl">{$navigation->level3_begin|escape}</textarea>
+				</div>
+			</td>
 		</tr>
-        <tr>
+		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_1('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_1('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_1('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_1('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_1('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_1('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_1('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_1('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_1('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -343,15 +397,15 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение активное, в конце названия изображения должно быть _act" onclick="textSelection_3_2('[tag:linkid]','');">[tag:img_act]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_3_2('[tag:img_id]','');">[tag:img_id]</a></strong>
 			</td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level3" rows="12" id="navi_level3">{$nav->navi_level3|escape}</textarea></div></td>
+			<td><div class="pr12"><textarea style="width:100%" name="level3" rows="12" id="level3">{$navigation->level3|escape}</textarea></div></td>
 		</tr>
 		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_2('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_2('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_2('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_2('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_2('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_2('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_2('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_2('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_2('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -381,15 +435,15 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение активное, в конце названия изображения должно быть _act" onclick="textSelection_3_3('[tag:linkid]','');">[tag:img_act]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_3_3('[tag:img_id]','');">[tag:img_id]</a></strong>
 			</td>
-			<td><div class="pr12"><textarea style="width:100%" name="navi_level3active" rows="12" id="navi_level3active">{$nav->navi_level3active|escape}</textarea></div></td>
+			<td><div class="pr12"><textarea style="width:100%" name="level3_active" rows="12" id="level3_active">{$navigation->level3_active|escape}</textarea></div></td>
 		</tr>
 		<tr>
 			<td>HTML Tags</td>
 			<td>
-		        |&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_3('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_3('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
-		        <a href="javascript:void(0);" onclick="textSelection_3_3('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
+				|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_3('<ol>', '</ol>');"><strong>OL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_3('<ul>', '</ul>');"><strong>UL</strong></a>&nbsp;|&nbsp;
+				<a href="javascript:void(0);" onclick="textSelection_3_3('<li>', '</li>');"><strong>LI</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_3('<p class=&quot;&quot;>', '</p>');"><strong>P</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_3('<strong>', '</strong>');"><strong>B</strong></a>&nbsp;|&nbsp;
 				<a href="javascript:void(0);" onclick="textSelection_3_3('<em>', '</em>');"><strong>I</strong></a>&nbsp;|&nbsp;
@@ -408,27 +462,29 @@
 			</td>
 		</tr>
 	</table>
-
-<div class="rowElem" id="saveBtn">
-	<div class="saveBtn">
-	<input type="submit" class="basicBtn" value="{#NAVI_BUTTON_SAVE#}" />
-	{if $smarty.request.action != 'new'}
-	&nbsp;{#NAVI_OR_BUTTON#}&nbsp;
-	<input type="submit" class="button blackBtn SaveEdit" value="{#NAVI_BUTTON_SAVE_NEXT#}" />
-	{/if}
 	</div>
+
+	<div class="fix"></div>
+
 </div>
 
-
-<div class="fix"></div>
-
+<div class="widget first">
+	<div class="rowElem" id="saveBtn">
+		<div class="saveBtn">
+			<input type="submit" class="basicBtn" value="{#NAVI_BUTTON_SAVE#}" />
+			{if $smarty.request.action != 'new'}
+			&nbsp;{#NAVI_OR_BUTTON#}&nbsp;
+			<input type="submit" class="button blackBtn SaveEdit" value="{#NAVI_BUTTON_SAVE_NEXT#}" />
+			{/if}
+		</div>
+	</div>
 </div>
 
 </form>
 {if $smarty.request.action != 'new'}
 <script language="javascript">
 	var sett_options = {ldelim}
-		url: '{$formaction}',
+		url: '{$form_action}',
 		data: {ldelim} ajax: '1', sub: 'save' {rdelim},
 		dataType: 'json',
 		beforeSubmit: Request,
@@ -450,23 +506,23 @@
 	$(document).ready(function(){ldelim}
 
 		Mousetrap.bind(['ctrl+s', 'command+s'], function(e) {ldelim}
-		    if (e.preventDefault) {ldelim}
-		        e.preventDefault();
-		    {rdelim} else {ldelim}
-		        // internet explorer
-		        e.returnValue = false;
-		    {rdelim}
-		    $("#navitemplate").ajaxSubmit(sett_options);
+			if (e.preventDefault) {ldelim}
+				e.preventDefault();
+			{rdelim} else {ldelim}
+				// internet explorer
+				e.returnValue = false;
+			{rdelim}
+			$("#navigation_template").ajaxSubmit(sett_options);
 			return false;
 		{rdelim});
 
-	    $(".SaveEdit").click(function(e){ldelim}
-		    if (e.preventDefault) {ldelim}
-		        e.preventDefault();
-		    {rdelim} else {ldelim}
-		        e.returnValue = false;
-		    {rdelim}
-		    $("#navitemplate").ajaxSubmit(sett_options);
+		$(".SaveEdit").click(function(e){ldelim}
+			if (e.preventDefault) {ldelim}
+				e.preventDefault();
+			{rdelim} else {ldelim}
+				e.returnValue = false;
+			{rdelim}
+			$("#navigation_template").ajaxSubmit(sett_options);
 			return false;
 		{rdelim});
 
@@ -476,14 +532,14 @@
 
 {include file="$codemirror_connect"}
 
-{include file="$codemirror_editor" conn_id="_1_1" textarea_id='navi_level1tpl' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
-{include file="$codemirror_editor" conn_id="_1_2" textarea_id='navi_level1' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
-{include file="$codemirror_editor" conn_id="_1_3" textarea_id='navi_level1active' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_1_1" textarea_id='level1_tpl' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_1_2" textarea_id='level1' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_1_3" textarea_id='level1_active' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}
 
-{include file="$codemirror_editor" conn_id="_2_1" textarea_id='navi_level2tpl' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
-{include file="$codemirror_editor" conn_id="_2_2" textarea_id='navi_level2' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
-{include file="$codemirror_editor" conn_id="_2_3" textarea_id='navi_level2active' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_2_1" textarea_id='level2_tpl' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_2_2" textarea_id='level2' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_2_3" textarea_id='level2_active' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}
 
-{include file="$codemirror_editor" conn_id="_3_1" textarea_id='navi_level3tpl' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
-{include file="$codemirror_editor" conn_id="_3_2" textarea_id='navi_level3' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
-{include file="$codemirror_editor" conn_id="_3_3" textarea_id='navi_level3active' ctrls='$("#navitemplate").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_3_1" textarea_id='level3_tpl' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_3_2" textarea_id='level3' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}
+{include file="$codemirror_editor" conn_id="_3_3" textarea_id='level3_active' ctrls='$("#navigation_template").ajaxSubmit(sett_options);' height=200}

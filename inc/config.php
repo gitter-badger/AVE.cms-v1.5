@@ -11,7 +11,7 @@
  * @license GPL v.2
  */
 
-@define('APP_NAME', 'AVE.CMS 3.0 (b34)');
+@define('APP_NAME', 'AVE.CMS 3.0 (b35)');
 @define('APP_VERSION', '1.5');
 @define('APP_INFO', '<a target="_blank" href="http://www.ave-cms.ru/">Ave-Cms.Ru</a> '.'&copy; 2007-'.date('Y'));
 

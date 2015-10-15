@@ -33,9 +33,10 @@ class AVE_Navigation
 	 */
 	function _replace_wildcode($text)
 	{
-//		$text = preg_replace('#[^(\w)|(\x7F-\xFF)|(\s)|\/-]#', '', $text);
-//		$text = preg_replace('#[^(\w)|(\?)|(-)|(\x7F-\xFF)|(\s)|\/-]#', '', $text);
-//		$text = htmlspecialchars($text, ENT_QUOTES);
+		$text = html_entity_decode($text,ENT_QUOTES,'UTF-8');
+		$text = preg_replace('/\s/i',' ',$text);
+		$text = str_replace(array('ô','ç','é','è','ä','à','â','ü','ñ'),array('o','c','e','e','a','a','a','u','n'), $text);
+		$text = htmlspecialchars($text, ENT_QUOTES, '"&><\'');
 		return $text;
 	}
 
@@ -51,27 +52,28 @@ class AVE_Navigation
 	{
 		global $AVE_DB, $AVE_Template;
 
-		$mod_navis = array();
+		$navigations = array();
 
 		// Выполняем запрос к БД на получение списка всех меню навигаций
 		$sql = $AVE_DB->Query("
 			SELECT
-				id,
-				navi_titel
-			FROM " . PREFIX . "_navigation
-			ORDER BY id ASC
+				navigation_id,
+				title
+			FROM
+				" . PREFIX . "_navigation
+			ORDER BY
+				navigation_id ASC
 		");
 
 		// Формируем данные в массив
-		while ($row = $sql->fetchrow())
+		while ($row = $sql->FetchRow())
 		{
-			array_push($mod_navis, $row);
+			array_push($navigations, $row);
 		}
-		$sql->Close();
 
 		// Передаем данные в шаблон для вывода и отображаем страницу со списком меню
-		$AVE_Template->assign('mod_navis', $mod_navis);
-		$AVE_Template->assign('content', $AVE_Template->fetch('navigation/overview.tpl'));
+		$AVE_Template->assign('navigations', $navigations);
+		$AVE_Template->assign('content', $AVE_Template->fetch('navigation/list.tpl'));
 	}
 
 
@@ -89,12 +91,10 @@ class AVE_Navigation
 		{
 			// Если действие не определено, отображаем чистую форму для создания шаблона навигации
 			case '':
-				// Получаем список всех Групп пользователей
-				$row->AvGroups = $AVE_User->userGroupListGet();
 
 				// Передаем данные в шаблон и отображаем страницу для добавления нового шаблона меню
-				$AVE_Template->assign('row', $row);
-				$AVE_Template->assign('formaction', 'index.php?do=navigation&amp;action=new&amp;sub=save&amp;cp=' . SESSION);
+				$AVE_Template->assign('groups', $AVE_User->userGroupListGet());
+				$AVE_Template->assign('form_action', 'index.php?do=navigation&action=new&sub=save&cp=' . SESSION);
 				$AVE_Template->assign('content', $AVE_Template->fetch('navigation/template.tpl'));
 				break;
 
@@ -103,40 +103,43 @@ class AVE_Navigation
 			case 'save':
 
 				// Определяем название меню навигации
-				$navi_titel   = (empty($_POST['navi_titel']))   ? 'title' : $_POST['navi_titel'];
+				$navigation_title			= (empty($_REQUEST['title']))   ? 'title' : $_REQUEST['title'];
 
-				// Определяем шаблон оформления 1-го уровня ссылок в меню. Если шаблон не указан пользователем,тогда
+				// Определяем шаблон оформления 1-го уровня ссылок
+				// в меню. Если шаблон не указан пользователем,тогда
 				// используем вариант "по умолчанию"
-				$navi_level1  = (empty($_POST['navi_level1']))  ? "<a target=\"[tag:target]\" href=\"[tag:link]\">[tag:linkname]</a>" : $_POST['navi_level1'];
-				$navi_level1active = (empty($_POST['navi_level1active'])) ? "<a target=\"[tag:target]\" href=\"[tag:link]\" class=\"first_active\">[tag:linkname]</a>" : $_POST['navi_level1active'];
+				$navigation_level1			= (empty($_REQUEST['level1']))  ? "<a target=\"[tag:target]\" href=\"[tag:link]\">[tag:linkname]</a>" : $_REQUEST['level1'];
+				$navigation_level1_active	= (empty($_REQUEST['level1_active'])) ? "<a target=\"[tag:target]\" href=\"[tag:link]\" class=\"first_active\">[tag:linkname]</a>" : $_REQUEST['level1_active'];
 
 				// Выполняем запрос к БД на добавление нового меню
 				$AVE_DB->Query("
-					INSERT
-					INTO " . PREFIX . "_navigation
+					INSERT INTO
+						" . PREFIX . "_navigation
 					SET
-						id	   = '',
-						navi_titel	= '" . $navi_titel . "',
-						navi_level1   = '" . $navi_level1 . "',
-						navi_level1active  = '" . $navi_level1active . "',
-						navi_level2   = '" . $_POST['navi_level2'] . "',
-						navi_level2active  = '" . $_POST['navi_level2active'] . "',
-						navi_level3   = '" . $_POST['navi_level3'] . "',
-						navi_level3active  = '" . $_POST['navi_level3active'] . "',
-						navi_level1begin = '" . $_POST['navi_level1begin'] . "',
-						navi_level2begin = '" . $_POST['navi_level2begin'] . "',
-						navi_level3begin = '" . $_POST['navi_level3begin'] . "',
-						navi_level1end = '" . $_POST['navi_level1end'] . "',
-						navi_level2end = '" . $_POST['navi_level2end'] . "',
-						navi_level3end = '" . $_POST['navi_level3end'] . "',
-						navi_begin	  = '" . $_POST['navi_begin'] . "',
-						navi_end	 = '" . $_POST['navi_end'] . "',
-						navi_user_group  = '" . (empty($_REQUEST['navi_user_group']) ? '' : implode(',', $_REQUEST['navi_user_group'])) . "',
-						navi_expand_ext = '" . $_POST['navi_expand_ext'] . "'
+						navigation_id		= '',
+						title				= '" . $navigation_title . "',
+						level1				= '" . $navigation_level1 . "',
+						level1_active		= '" . $navigation_level1_active . "',
+						level2				= '" . $_REQUEST['level2'] . "',
+						level2_active 		= '" . $_REQUEST['level2_active'] . "',
+						level3				= '" . $_REQUEST['level3'] . "',
+						level3_active 		= '" . $_REQUEST['level3_active'] . "',
+						level1_begin		= '" . $_REQUEST['level1_begin'] . "',
+						level2_begin		= '" . $_REQUEST['level2_begin'] . "',
+						level3_begin		= '" . $_REQUEST['level3_begin'] . "',
+						level1_end			= '" . $_REQUEST['level1_end'] . "',
+						level2_end			= '" . $_REQUEST['level2_end'] . "',
+						level3_end			= '" . $_REQUEST['level3_end'] . "',
+						begin				= '" . $_REQUEST['begin'] . "',
+						end					= '" . $_REQUEST['end'] . "',
+						user_group			= '" . (empty($_REQUEST['user_group']) ? '' : implode(',', $_REQUEST['user_group'])) . "',
+						expand_ext			= '" . $_REQUEST['expand_ext'] . "'
 				");
 
+				$navigation_id = $AVE_DB->getLastInsertId();
+
 				// Сохраняем системное сообщение в журнал
-				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_NEW') . " (" . stripslashes($navi_titel) . ")");
+				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_NEW') . " (" . stripslashes($navigation_title) . ") (ID: $navigation_id)");
 
 				// Выполянем переход к списку меню навигаций
 				header('Location:index.php?do=navigation&cp=' . SESSION);
@@ -155,9 +158,6 @@ class AVE_Navigation
 	{
 		global $AVE_DB, $AVE_Template, $AVE_User;
 
-		// Получаем id меню
-		$navigation_id = (int)$navigation_id;
-
 		// Определяем действие пользователя
 		switch ($_REQUEST['sub'])
 		{
@@ -167,17 +167,19 @@ class AVE_Navigation
 				// Выполняем запрос к БД и получаем всю информацию о данном меню
 				$row = $AVE_DB->Query("
 					SELECT *
-					FROM " . PREFIX . "_navigation
-					WHERE id = '" . $navigation_id . "'
-				")->fetchrow();
+					FROM
+						" . PREFIX . "_navigation
+					WHERE
+						navigation_id = '" . $navigation_id . "'
+				")->FetchRow();
 
 				// Формируем список групп пользователей
-				$row->navi_user_group = explode(',', $row->navi_user_group);
-				$row->AvGroups = $AVE_User->userGroupListGet();
+				$row->user_group = explode(',', $row->user_group);
 
 				// Формируем ряд переменных для использования в шаблоне и отображаем форм с данными для редактирования
-				$AVE_Template->assign('nav', $row);
-				$AVE_Template->assign('formaction', 'index.php?do=navigation&action=templates&sub=save&id=' . $navigation_id . '&cp=' . SESSION);
+				$AVE_Template->assign('navigation', $row);
+				$AVE_Template->assign('groups', $AVE_User->userGroupListGet());
+				$AVE_Template->assign('form_action', 'index.php?do=navigation&action=templates&sub=save&navigation_id=' . $navigation_id . '&cp=' . SESSION);
 				$AVE_Template->assign('content', $AVE_Template->fetch('navigation/template.tpl'));
 				break;
 
@@ -188,41 +190,53 @@ class AVE_Navigation
 				$sql = $AVE_DB->Query("
 					UPDATE " . PREFIX . "_navigation
 					SET
-						navi_titel	= '" . $_POST['navi_titel'] . "',
-						navi_level1   = '" . $_POST['navi_level1'] . "',
-						navi_level1active  = '" . $_POST['navi_level1active'] . "',
-						navi_level2   = '" . $_POST['navi_level2'] . "',
-						navi_level2active  = '" . $_POST['navi_level2active'] . "',
-						navi_level3   = '" . $_POST['navi_level3'] . "',
-						navi_level3active  = '" . $_POST['navi_level3active'] . "',
-						navi_level1begin = '" . $_POST['navi_level1begin'] . "',
-						navi_level1end = '" . $_POST['navi_level1end'] . "',
-						navi_level2begin = '" . $_POST['navi_level2begin'] . "',
-						navi_level2end = '" . $_POST['navi_level2end'] . "',
-						navi_level3begin = '" . $_POST['navi_level3begin'] . "',
-						navi_level3end = '" . $_POST['navi_level3end'] . "',
-						navi_begin	  = '" . $_POST['navi_begin'] . "',
-						navi_end	 = '" . $_POST['navi_end'] . "',
-						navi_user_group  = '" . (empty($_REQUEST['navi_user_group']) ? '' : implode(',', $_REQUEST['navi_user_group'])) . "',
-						navi_expand_ext = '" . $_POST['navi_expand_ext'] . "'
+						title				= '" . $_REQUEST['title'] . "',
+						level1				= '" . $_REQUEST['level1'] . "',
+						level1_active		= '" . $_REQUEST['level1_active'] . "',
+						level2				= '" . $_REQUEST['level2'] . "',
+						level2_active 		= '" . $_REQUEST['level2_active'] . "',
+						level3				= '" . $_REQUEST['level3'] . "',
+						level3_active 		= '" . $_REQUEST['level3_active'] . "',
+						level1_begin		= '" . $_REQUEST['level1_begin'] . "',
+						level2_begin		= '" . $_REQUEST['level2_begin'] . "',
+						level3_begin		= '" . $_REQUEST['level3_begin'] . "',
+						level1_end			= '" . $_REQUEST['level1_end'] . "',
+						level2_end			= '" . $_REQUEST['level2_end'] . "',
+						level3_end			= '" . $_REQUEST['level3_end'] . "',
+						begin				= '" . $_REQUEST['begin'] . "',
+						end					= '" . $_REQUEST['end'] . "',
+						user_group			= '" . (empty($_REQUEST['user_group']) ? '' : implode(',', $_REQUEST['user_group'])) . "',
+						expand_ext			= '" . $_REQUEST['expand_ext'] . "'
 					WHERE
-						id = '" . $navigation_id . "'
+						navigation_id		= '" . $navigation_id . "'
 				");
 
-				if ($sql->_result === false) {
+				if ($sql === false)
+				{
 					$message = $AVE_Template->get_config_vars('NAVI_REPORT_SAVED_ERR');
 					$header = $AVE_Template->get_config_vars('NAVI_REPORT_ERROR');
 					$theme = 'error';
-				}else{
+				}
+				else
+				{
 					$message = $AVE_Template->get_config_vars('NAVI_REPORT_SAVED');
 					$header = $AVE_Template->get_config_vars('NAVI_REPORT_SUCCESS');
 					$theme = 'accept';
-					reportLog($AVE_Template->get_config_vars('NAVI_REPORT_EDIT') . " (" . stripslashes($_POST['navi_titel']) . ')');
+					reportLog($AVE_Template->get_config_vars('NAVI_REPORT_EDIT') . " (" . stripslashes($_REQUEST['title']) . ") (ID: $navigation_id)");
 				}
 
-				if (isset($_REQUEST['ajax']) && $_REQUEST['ajax'] = '1') {
-					echo json_encode(array('message' => $message, 'header' => $header, 'theme' => $theme));
-				} else {
+				if (isAjax())
+				{
+					echo json_encode(
+						array(
+							'message' => $message,
+							'header' => $header,
+							'theme' => $theme
+							)
+						);
+				}
+				else
+				{
 					$AVE_Template->assign('message', $message);
 					header('Location:index.php?do=navigation&cp=' . SESSION);
 				}
@@ -241,54 +255,51 @@ class AVE_Navigation
 	{
 		global $AVE_DB, $AVE_Template;
 
-
 		// Если в запросе указано числовое значение id меню
 		if (is_numeric($navigation_id))
 		{
 			// Выполняем запрос к БД на получение информации о копируемом меню
 			$row = $AVE_DB->Query("
 				SELECT *
-				FROM " . PREFIX . "_navigation
-				WHERE id = '" . $navigation_id . "'
-			")->fetchrow();
-
+				FROM
+					" . PREFIX . "_navigation
+				WHERE
+					navigation_id = '" . $navigation_id . "'
+			")->FetchRow();
 
 			// Если данные получены, тогда
 			if ($row)
 			{
-
 				// Выполняем запрос к БД на добавление нового меню и сохраняем информацию с учетом данных,
 				// полученных в предыдущем запросе к БД
 				$AVE_DB->Query("
-					INSERT
-					INTO " . PREFIX . "_navigation
+					INSERT INTO
+						" . PREFIX . "_navigation
 					SET
-						id	   = '',
-						navi_titel	= '" . addslashes((empty($_REQUEST['navi_titel']) ? $row->navi_titel : $_REQUEST['navi_titel'])) . "',
-						navi_level1   = '" . addslashes($row->navi_level1) . "',
-						navi_level1active  = '" . addslashes($row->navi_level1active) . "',
-						navi_level2   = '" . addslashes($row->navi_level2) . "',
-						navi_level2active  = '" . addslashes($row->navi_level2active) . "',
-						navi_level3   = '" . addslashes($row->navi_level3) . "',
-						navi_level3active  = '" . addslashes($row->navi_level3active) . "',
-						navi_begin	  = '" . addslashes($row->navi_begin) . "',
-						navi_end	 = '" . addslashes($row->navi_end) . "',
-						navi_level1begin = '" . addslashes($row->navi_level1begin) . "',
-						navi_level2begin = '" . addslashes($row->navi_level2begin) . "',
-						navi_level3begin = '" . addslashes($row->navi_level3begin) . "',
-						navi_level1end = '" . addslashes($row->navi_level1end) . "',
-						navi_level2end = '" . addslashes($row->navi_level2end) . "',
-						navi_level3end = '" . addslashes($row->navi_level3end) . "',
-						navi_user_group  = '" . addslashes($row->navi_user_group) . "',
-						navi_expand_ext = '" . $row->navi_expand_ext . "'
+						navigation_id		= '',
+						title				= '" . addslashes((empty($_REQUEST['title']) ? $row->title : $_REQUEST['title'])) . "',
+						level1				= '" . addslashes($row->level1) . "',
+						level1_active		= '" . addslashes($row->level1_active) . "',
+						level2				= '" . addslashes($row->level2) . "',
+						level2_active 		= '" . addslashes($row->level2_active) . "',
+						level3				= '" . addslashes($row->level3) . "',
+						level3_active 		= '" . addslashes($row->level3_active) . "',
+						level1_begin		= '" . addslashes($row->level1_begin) . "',
+						level2_begin		= '" . addslashes($row->level2_begin) . "',
+						level3_begin		= '" . addslashes($row->level3_begin) . "',
+						level1_end			= '" . addslashes($row->level1_end) . "',
+						level2_end			= '" . addslashes($row->level2_end) . "',
+						level3_end			= '" . addslashes($row->level3_end) . "',
+						begin				= '" . addslashes($row->begin) . "',
+						end					= '" . addslashes($row->end) . "',
+						user_group			= '" . addslashes($row->user_group) . "',
+						expand_ext			= '" . $row->expand_ext . "'
 				");
 
-
 				// Сохраняем системное сообщение в журнал
-				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_COPY') . " (" . (empty($_REQUEST['navi_titel']) ? $row->navi_titel : $_REQUEST['navi_titel']) . ")");
+				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_COPY') . " (" . (empty($_REQUEST['title']) ? $row->title : $_REQUEST['title']) . ") (ID: $navigation_id)");
 			}
 		}
-
 
 		// Выполянем переход к списку меню навигаций
 		header('Location:index.php?do=navigation&cp=' . SESSION);
@@ -311,17 +322,19 @@ class AVE_Navigation
 
 			 $sql= $AVE_DB->Query("
 				SELECT *
-				FROM " . PREFIX . "_navigation
-				WHERE id = '" . $navigation_id . "'
+				FROM
+					" . PREFIX . "_navigation
+				WHERE
+					navigation_id = '" . $navigation_id . "'
 			")->FetchRow();
 
 			// Выполняем запрос к БД на удаление общей информации и шаблона оформления меню
-			$AVE_DB->Query("DELETE FROM " . PREFIX . "_navigation WHERE id = '" . $navigation_id . "'");
+			$AVE_DB->Query("DELETE FROM " . PREFIX . "_navigation WHERE navigation_id = '" . $navigation_id . "'");
 			// Выполняем запрос к БД на удаление всех пунктов для данного меню
-			$AVE_DB->Query("DELETE FROM " . PREFIX . "_navigation_items WHERE navi_id = '" . $navigation_id . "'");
+			$AVE_DB->Query("DELETE FROM " . PREFIX . "_navigation_items WHERE navigation_id = '" . $navigation_id . "'");
 
 			// Сохраняем системное сообщение в журнал
-			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DEL') . " (" . stripslashes($sql->navi_titel) . ") (id: $navigation_id)");
+			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DEL') . " (" . stripslashes($sql->title) . ") (ID: $navigation_id)");
 		}
 
 		// Выполянем переход к списку меню навигаций
@@ -338,84 +351,65 @@ class AVE_Navigation
 	{
 		global $AVE_DB, $AVE_Template;
 
-		$navigation_item = array();
 		$navigations = array();
 
 		// Выполняем запрос к БД на получение id и названия меню навигации
 		$sql = $AVE_DB->Query("
 			SELECT
-				id,
-				navi_titel
-			FROM " . PREFIX . "_navigation
+				navigation_id,
+				title
+			FROM
+				" . PREFIX . "_navigation
 		");
 
-
 		// Циклически обрабатываем полученные данные
-		while ($navigation = $sql->fetchrow())
+		while ($navigation = $sql->FetchRow())
 		{
 			// Выполняем запрос к БД на получение всех пунктов для каждого меню.
-			// Фактически получаем пункты первого уровня.
-			$sql_navis = $AVE_DB->Query("
-				SELECT *
-				FROM " . PREFIX . "_navigation_items
-				WHERE navi_id = '" . $navigation->id . "'
-				AND parent_id = 0
-				AND navi_item_level = 1
-				ORDER BY navi_item_position ASC
+			$sql_items = $AVE_DB->Query("
+				SELECT
+					*
+				FROM
+					" . PREFIX . "_navigation_items
+				WHERE
+					navigation_id = " . (int)$navigation->navigation_id . "
+				AND
+					parent_id = 0
+				ORDER BY
+					position ASC
 			");
 
-			// Циклически обрабатываем полученые данные
-			while ($row_1 = $sql_navis->fetchrow())
+			while ($row = $sql_items->FetchAssocArray())
 			{
-				$navigation_item_2 = array();
-
-				// Выполняем запрос к БД на получение подпунктов меню.
-				// Фактически получаем пункты второго уровня.
-				$sql_2 = $AVE_DB->Query("
-					SELECT *
-					FROM " . PREFIX . "_navigation_items
-					WHERE navi_id = '" . $navigation->id . "'
-					AND parent_id = '" . $row_1->Id . "'
-					AND navi_item_level = 2
-					ORDER BY navi_item_position ASC
-				");
-
-				// Циклически обрабатываем полученые данные
-				while ($row_2 = $sql_2->fetchrow())
+				// имя связанного документа
+				if ($row['document_id'] > 0)
 				{
-					$navigation_item_3 = array();
-
-					// Выполняем запрос к БД на получение подпунктов меню.
-					// Фактически получаем пункты третьего уровня.
-					$sql_3 = $AVE_DB->Query("
-						SELECT *
-						FROM " . PREFIX . "_navigation_items
-						WHERE navi_id = '" . $navigation->id . "'
-						AND parent_id = '" . $row_2->Id . "'
-						AND navi_item_level = 3
-						ORDER BY navi_item_position ASC
-					");
-
-					while ($row_3 = $sql_3->fetchrow())
-					{
-						array_push($navigation_item_3, $row_3);
-					}
-
-					$row_2->ebene_3 = $navigation_item_3;
-					array_push($navigation_item_2, $row_2);
+						$doc_info = get_document((int)$row['document_id']);
+						$row['document_title'] = (($doc_info['document_breadcrum_title']) ? $doc_info['document_breadcrum_title'] : $doc_info['document_title']);
+				}
+				else
+				{
+					$row['document_title'] = '';
 				}
 
-				$row_1->ebene_2 = $navigation_item_2;
-				$row_1->RubId = $navigation->id;
-				$row_1->Rubname = $navigation->navi_titel;
-				array_push($navigation_item, $row_1);
+				$row['children'] = $this->getChildrenById($row['navigation_item_id'], 0, true);
+
+				if (! empty($item_id))
+					$items = $row;
+				else
+					$items[] = $row;
 			}
+
+			$navigation->navigation_items = $items;
+
+			unset($items);
+
 			array_push($navigations, $navigation);
 		}
 
 		// Передаем полученные данные в шаблон для вывода
-		$AVE_Template->assign('navis', $navigations);
-		$AVE_Template->assign('navi_items', $navigation_item);
+		$AVE_Template->assign('navigations', $navigations);
+		$AVE_Template->assign('select_tpl', 'navigation/select.tpl');
 	}
 
 
@@ -424,94 +418,110 @@ class AVE_Navigation
 	 *
 	 * @param int $id идентификатор меню навигации
 	 */
-	function navigationItemList($id)
+	function navigationItemList($navigation_id)
 	{
 		global $AVE_DB, $AVE_Template;
 
-		$id = (int)$id;
-
-		if(isset($_REQUEST['save']) && $_REQUEST['save'] == 'pos')
-		{
-			$result = $_REQUEST["item"];
-			$i = 0;
-			foreach($result as $value) {
-				$AVE_DB->Query("UPDATE " . PREFIX . "_navigation_items SET navi_item_position = '".$i."' WHERE Id = '".$value."'");
-				$i++;
-			}
-
-			if (isAjax()){
-				$message = $AVE_Template->get_config_vars('NAVI_SORTED');
-				$header = $AVE_Template->get_config_vars('NAVI_REPORT_SUCCESS');
-				$theme = 'accept';
-				echo json_encode(array('message' => $message, 'header' => $header, 'theme' => $theme));
-			}
-
-			exit;
-		}
-
-		$navigation_item = array();
-
-		// Выполняем запрос к БД и получаем список пунктов первого уровня для выбранного меню
-		$sql_navis = $AVE_DB->Query("
-			SELECT *
-			FROM " . PREFIX . "_navigation_items
-			WHERE navi_id = '" . $id . "'
-			AND parent_id = 0
-			AND navi_item_level = 1
-			ORDER BY navi_item_position ASC
+		$sql = $AVE_DB->Query("
+			SELECT
+				*
+			FROM
+				" . PREFIX . "_navigation_items
+			WHERE
+				navigation_id = " . (int)$navigation_id . "
+			AND
+				parent_id = 0
+			ORDER BY
+				position ASC
 		");
 
-		while ($row_1 = $sql_navis->fetchrow())
-		{
-			$navigation_item_2 = array();
-			// Выполняем запрос к БД и получаем список пунктов второго уровня для выбранного меню
-			$sql_2 = $AVE_DB->Query("
-				SELECT *
-				FROM " . PREFIX . "_navigation_items
-				WHERE navi_id = '" . $id . "'
-				AND parent_id = '" . $row_1->Id . "'
-				AND navi_item_level = 2
-				ORDER BY navi_item_position ASC
-			");
-			while ($row_2 = $sql_2->fetchrow())
-			{
-				$navigation_item_3 = array();
+		$items = array();
 
-				// Выполняем запрос к БД и получаем список пунктов третьего уровня для выбранного меню
-				$sql_3 = $AVE_DB->Query("
-					SELECT *
-					FROM " . PREFIX . "_navigation_items
-					WHERE navi_id = '" . $id . "'
-					AND parent_id = '" . $row_2->Id . "'
-					AND navi_item_level = 3
-					ORDER BY navi_item_position ASC
-				");
-				while ($row_3 = $sql_3->fetchrow())
+		while ($row = $sql->FetchAssocArray())
+		{
+			// имя связанного документа
+				// имя связанного документа
+				if ($row['document_id'] > 0)
 				{
-					array_push($navigation_item_3, $row_3);
+						$doc_info = get_document((int)$row['document_id']);
+						$row['document_title'] = (($doc_info['document_breadcrum_title']) ? $doc_info['document_breadcrum_title'] : $doc_info['document_title']);
+				}
+				else
+				{
+					$row['document_title'] = '';
 				}
 
-				$row_2->ebene_3 = $navigation_item_3;
-				array_push($navigation_item_2, $row_2);
-			}
-			$row_1->ebene_2 = $navigation_item_2;
-			array_push($navigation_item, $row_1);
+			$row['children'] = $this->getChildrenById($row['navigation_item_id'], 0, true);
+
+			if (! empty($item_id))
+				$items = $row;
+			else
+				$items[] = $row;
 		}
 
-		// Выполняем запрос к БД и получаем название меню навигации
-		$sql = $AVE_DB->Query("
-			SELECT navi_titel
-			FROM " . PREFIX . "_navigation
-			WHERE id = '" . $id . "'
-		");
-		$row = $sql->fetchrow();
+		 $navigation = $AVE_DB->Query("
+			SELECT *
+			FROM
+				" . PREFIX . "_navigation
+			WHERE
+				navigation_id = '" . $navigation_id . "'
+		")->FetchRow();
 
-		// Передаем данные в шаблон для вывода и отображаем страницу с пунктами меню
-		$AVE_Template->assign('NavigatonName', $row->navi_titel);
-		$AVE_Template->assign('entries', $navigation_item);
-		$AVE_Template->assign('content', $AVE_Template->fetch('navigation/entries.tpl'));
+		$AVE_Template->assign('navigation', $navigation);
+		$AVE_Template->assign('items', $items);
+		$AVE_Template->assign('level', 1);
+
+		$AVE_Template->assign('nestable_tpl', 'navigation/nestable.tpl');
+		$AVE_Template->assign('content', $AVE_Template->fetch('navigation/items.tpl'));
 	}
 
+
+	/**
+	 *	Метод для рекурсивного получения
+	 *	пунктов меню навигации в Панели управления
+	 */
+	public function getChildrenById($navigation_item_id, $rec_status = 1, $recurse = false)
+	{
+		global $AVE_DB;
+
+		$sql = $AVE_DB->Query("
+			SELECT
+				*
+			FROM
+				" . PREFIX . "_navigation_items
+			WHERE
+				parent_id = " . $navigation_item_id . "
+			ORDER BY
+				position ASC
+		");
+
+		$children = array();
+
+		while($row = $sql->FetchAssocArray())
+		{
+			if($recurse)
+			{
+				// имя связанного документа
+				if ($row['document_id'] > 0)
+				{
+						$doc_info = get_document((int)$row['document_id']);
+						$row['document_title'] = (($doc_info['document_breadcrum_title']) ? $doc_info['document_breadcrum_title'] : $doc_info['document_title']);
+				}
+				else
+				{
+					$row['document_title'] = '';
+				}
+				$row['children'] = $this->getChildrenById($row['navigation_item_id'], $rec_status,$recurse);
+			}
+
+			$children[] = $row;
+		}
+
+		return ((count($children) > 0)
+			? $children
+			: false
+		);
+	}
 
 
 	/**
@@ -519,215 +529,159 @@ class AVE_Navigation
 	 *
 	 * @param int $id идентификатор меню навигации
 	 */
-	function navigationItemEdit($nav_id)
+	function navigationItemEdit($navigation_item_id = null)
 	{
 		global $AVE_DB, $AVE_Template;
 
-		$nav_id = (int)$nav_id;
-
-		// Циклически обрабатываем все параметры, пришедшие методом POST при сохранении изменений
-		foreach ($_POST['title'] as $id => $title)
+		// Определяем действие пользователя
+		switch ($_REQUEST['sub'])
 		{
-			// Если название пункта меню не пустое
-			if (!empty($title))
-			{
-				$id = (int)$id;
+			// Если действие не определено, отображаем форму с данными для редактирования
+			case 'new':
 
-				$_POST['navi_item_link'][$id] = (strpos($_POST['navi_item_link'][$id], 'javascript') !== false)
-					? str_replace(array(' ', '%'), '-', $_POST['navi_item_link'][$id])
-					: $_POST['navi_item_link'][$id];
+				$sql = $AVE_DB->Query("
+					SELECT
+						*
+					FROM
+						" . PREFIX . "_navigation_items
+					WHERE
+						navigation_id = " . (int)$_REQUEST['navigation_id'] . "
+					AND
+						parent_id = 0
+					ORDER BY
+						position ASC
+				");
+
+				$items = array();
+
+				while ($row = $sql->FetchAssocArray())
+				{
+					// имя связанного документа
+						// имя связанного документа
+						if ($row['document_id'] > 0)
+						{
+								$doc_info = get_document((int)$row['document_id']);
+								$row['document_title'] = (($doc_info['document_breadcrum_title']) ? $doc_info['document_breadcrum_title'] : $doc_info['document_title']);
+						}
+						else
+						{
+							$row['document_title'] = '';
+						}
+
+					$row['children'] = $this->getChildrenById($row['navigation_item_id'], 0, true);
+
+					if (! empty($item_id))
+						$items = $row;
+					else
+						$items[] = $row;
+				}
+
+				$AVE_Template->assign('select_tpl', 'navigation/select.tpl');
+				$AVE_Template->assign('items', $items);
+				$AVE_Template->assign('content', $AVE_Template->fetch('navigation/item_new.tpl'));
+			break;
+
+			case 'edit':
+
+				$item = $AVE_DB->Query("
+					SELECT
+						*
+					FROM
+						" . PREFIX . "_navigation_items
+					WHERE
+						navigation_item_id = " . $navigation_item_id . "
+				")->FetchRow();
+
+				if ($item->document_id)
+					$doc_info = get_document((int)$item->document_id);
+					$item->document_title = (($doc_info['document_breadcrum_title']) ? $doc_info['document_breadcrum_title'] : $doc_info['document_title']);
+					$item->document_alias = $doc_info['document_alias'];
+
+				$AVE_Template->assign('item', $item);
+				$AVE_Template->assign('content', $AVE_Template->fetch('navigation/item_edit.tpl'));
+			break;
+
+			case 'save':
+
+				$_REQUEST['alias'] = (strpos($_REQUEST['alias'], 'javascript') !== false)
+					? str_replace(array(' ', '%'), '-', $_REQUEST['alias'])
+					: $_REQUEST['alias'];
 
 				// Определяем флаг статуса пункта меню (активен/неактивен)
-				$navi_item_status = (empty($_POST['navi_item_status'][$id]) || empty($_POST['navi_item_link'][$id])) ? 0 : 1;
+				$status = (empty($_REQUEST['alias'])) ? 0 : 1;
 
-
-				$link_url = '';
-				$matches = array();
-
-				// документы	
-				preg_match('/^index\.php\?id=(\d+)$/', trim($_POST['navi_item_link'][$id]), $matches);
-				if (isset($matches[1]))
+				if ($navigation_item_id)
 				{
-					$link_url = $AVE_DB->Query("
-						SELECT document_alias
-						FROM " . PREFIX . "_documents
-						WHERE id = '" . $matches[1] . "'
-					")->GetCell();
+					// Выполняем запрос к БД и обновляем информацию в таблице для данного меню
+					$sql = $AVE_DB->Query("
+						UPDATE
+							" . PREFIX . "_navigation_items
+						SET
+							document_id			= '" . (($_REQUEST['document_id']) ? (int)$_REQUEST['document_id'] : '') . "',
+							title				= '" . $this->_replace_wildcode($_REQUEST['title']) . "',
+							alias				= '" . $_REQUEST['alias'] . "',
+							description			= '" . $this->_replace_wildcode($_REQUEST['description']) . "',
+							image				= '" . $_REQUEST['image'] . "',
+							css_class			= '" . $_REQUEST['css_class'] . "',
+							css_id				= '" . $_REQUEST['css_id'] . "',
+							target				= '" . $_REQUEST['target'] . "',
+							status				= '" . $status . "'
+						WHERE
+							navigation_item_id		= '" . $navigation_item_id . "'
+					");
 				}
-
-				$position = (isset($_POST['navi_item_position'][$id])) ? "navi_item_position  = '" . intval($_POST['navi_item_position'][$id]) . "'," : '';
-
-				$AVE_DB->Query("
-					UPDATE " . PREFIX . "_navigation_items
-					SET
-						title = '" . $this->_replace_wildcode($title) . "',
-						navi_item_link  = '" . $_POST['navi_item_link'][$id] . "',
-						$position
-						navi_item_target  = '" . $_POST['navi_item_target'][$id] . "',
-						navi_item_status = '" . $navi_item_status . "',
-						navi_item_desc = '" . $_POST['descr'][$id] . "',
-						navi_item_Img = '" . $_POST['Img'][$id] . "',
-						navi_item_Img_id = '" . $_POST['Img_id'][$id] . "',
-						document_alias   = '" . ($link_url == '' ? $_POST['navi_item_link'][$id] : $link_url) . "'
-					WHERE
-						Id = '" . $id . "'
-				");
-			}
-		}
-
-		// Если в запросе пришел параметр на добавление нового пункта меню первого уровня
-		if (!empty($_POST['Titel_N'][0]))
-		{
-
-			// Выполняем запрос к БД и добавляем новый пункт
-			$AVE_DB->Query("
-				INSERT
-				INTO " . PREFIX . "_navigation_items
-				SET
-					Id	 = '',
-					title  = '" . $this->_replace_wildcode($_POST['Titel_N'][0]) . "',
-					parent_id  = '0',
-					navi_item_link   = '" . $_POST['Link_N'][0] . "',
-					navi_item_target   = '" . $_POST['Target_N'][0] . "',
-					navi_item_level  = '1',
-					navi_item_position   = '" . intval($_POST['Rang_N'][0]) . "',
-					navi_id = '" . intval($_POST['navi_id']) . "',
-					navi_item_desc = '" . $_POST['descr_N'][0] . "',
-					navi_item_Img = '" . $_POST['Img_N'][0] . "',
-					navi_item_Img_id = '" . $_POST['Img_id_N'][0] . "',
-					navi_item_status  = '" . (empty($_POST['Link_N'][0]) ? '0' : '1') . "',
-					document_alias	= '" . prepare_url(empty($_POST['Url_N'][0]) ? $_POST['Titel_N'][0] : $_POST['Url_N'][0]) . "'
-			");
-
-			// Сохраняем системное сообщение в журнал
-			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_ADDIT') . " (" . stripslashes($_POST['Titel_N'][0]) . ") - ". $AVE_Template->get_config_vars('NAVI_REPORT_FLEV'));
-		}
-
-		// Обрабатываем данные с целью добавления пунктов меню второго уровня
-		foreach ($_POST['Titel_Item_2'] as $new2_id => $title)
-		{
-			// Если название пункта не пустое
-			if (!empty($title))
-			{
-				$new2_id = (int)$new2_id;
-
-				// Выполняем запрос к БД и добавляем новый подпункт
-				$AVE_DB->Query("
-					INSERT
-					INTO " . PREFIX . "_navigation_items
-					SET
-						Id	 = '',
-						title  = '" . $this->_replace_wildcode($title) . "',
-						parent_id  = '" . $new2_id . "',
-						navi_item_link   = '" . $_POST['Link_Item_2'][$new2_id] . "',
-						navi_item_target   = '" . $_POST['Target_Item_2'][$new2_id] . "',
-						navi_item_desc = '" . $_POST['descr_Item_2'][$new2_id] . "',
-						navi_item_Img = '" . $_POST['Img_Item_2'][$new2_id] . "',
-						navi_item_Img_id = '" . $_POST['Img_id_Item_2'][$new2_id] . "',
-						navi_item_level  = '2',
-						navi_item_position   = '" . intval($_POST['Rang_Item_2'][$new2_id]) . "',
-						navi_id = '" . intval($_POST['navi_id']) . "',
-						navi_item_status  = '" . (empty($_POST['Link_Item_2'][$new2_id]) ? '0' : '1') . "',
-						document_alias	= '" . prepare_url(empty($_POST['Url_Item_2'][$new2_id]) ? $title : $_POST['Url_Item_2'][$new2_id]) . "'
-				");
-
-				// Сохраняем системное сообщение в журнал
-				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_ADDIT') . " (" . $this->_replace_wildcode($title) . ") - ". $AVE_Template->get_config_vars('NAVI_REPORT_SLEV'));
-			}
-		}
-
-		// Обрабатываем данные с целью добавления пунктов меню третьего уровня
-		foreach ($_POST['Titel_Item_3'] as $new3_id => $title)
-		{
-			// Если название пункта не пустое
-			if (!empty($title))
-			{
-				$new3_id = (int)$new3_id;
-				// Выполняем запрос к БД и добавляем новый подпункт
-				$AVE_DB->Query("
-					INSERT
-					INTO " . PREFIX . "_navigation_items
-					SET
-						Id	 = '',
-						title  = '" . $this->_replace_wildcode($title) . "',
-						parent_id  = '" . $new3_id . "',
-						navi_item_link   = '" . $_POST['Link_Item_3'][$new3_id] . "',
-						navi_item_target   = '" . $_POST['Target_Item_3'][$new3_id] . "',
-						navi_item_desc = '" . $_POST['descr_Item_3'][$new3_id] . "',
-						navi_item_Img = '" . $_POST['Img_Item_3'][$new3_id] . "',
-						navi_item_Img_id = '" . $_POST['Img_id_Item_3'][$new3_id] . "',
-						navi_item_level  = '3',
-						navi_item_position   = '" . intval($_POST['Rang_Item_3'][$new3_id]) . "',
-						navi_id = '" . intval($_POST['navi_id']) . "',
-						navi_item_status  = '" . (empty($_POST['Link_Item_3'][$new3_id]) ? '0' : '1') . "',
-						document_alias	= '" . prepare_url(empty($_POST['Url_Item_3'][$new3_id]) ? $title : $_POST['Url_Item_3'][$new3_id]) . "'
-				");
-
-				// Сохраняем системное сообщение в журнал
-				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_ADDIT') . " (" . $this->_replace_wildcode($title) . ") - ". $AVE_Template->get_config_vars('NAVI_REPORT_TLEV'));
-			}
-		}
-
-		// Если в запросе были отмечены пункты меню, которые необходимо удалить, тогда
-		if (!empty($_POST['del']) && is_array($_POST['del']))
-		{
-			// Циклически обрабатываем помеченные пункты
-			foreach ($_POST['del'] as $del_id => $del)
-			{
-				if (!empty($del))
+				else
 				{
-					$del_id = (int)$del_id;
-
-					// Выполняем запрос к БД для определения у удаляемого пункта подпунктов
-					$num = $AVE_DB->Query("
-						SELECT Id
-						FROM " . PREFIX . "_navigation_items
-						WHERE parent_id = '" . $del_id . "'
-						LIMIT 1
-					")->NumRows();
-
-					// Если данный пункт имеет подпункты, тогда
-					if ($num==1)
-					{
-						$sql = $AVE_DB->Query("
-							SELECT *
-							FROM " . PREFIX . "_navigation_items
-							WHERE Id = '" . $del_id . "'
-							LIMIT 1
-						")->FetchRow();
-						// Выполняем запрос к БД и деактивируем пункт меню
-						$AVE_DB->Query("
-							UPDATE " . PREFIX . "_navigation_items
-							SET navi_item_status = '0'
-							WHERE Id = '" . $del_id . "'
-						");
-						// Сохраняем системное сообщение в журнал
-						reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DEACT') . " (" . stripslashes($sql->title) . ") (id: $del_id)");
-					}
+					if ($_REQUEST['after'])
+						$after = $AVE_DB->Query("SELECT * FROM ".PREFIX."_navigation_items WHERE navigation_item_id = '" . $_REQUEST['after'] . "' ")->FetchArray();
 					else
-					{ // В противном случае, если данный пункт не имеет подпунктов, тогда
-						$sql = $AVE_DB->Query("
-							SELECT *
-							FROM " . PREFIX . "_navigation_items
-							WHERE Id = '" . $del_id . "'
-							LIMIT 1
-						")->FetchRow();
-						// Выполняем запрос к БД и удаляем помеченный пункт
-						$AVE_DB->Query("
-							DELETE
-							FROM " . PREFIX . "_navigation_items
-							WHERE Id = '" . $del_id . "'
-						");
-						// Сохраняем системное сообщение в журнал
-						reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DELIT') . " (" . stripslashes($sql->title) . ") (id: $del_id)");
-					}
+						$after = array('parent_id' => 0, 'level' => 1, 'position' => 0);
+
+					// Выполняем запрос к БД и обновляем информацию в таблице для данного меню
+					$sql = $AVE_DB->Query("
+						INSERT
+							" . PREFIX . "_navigation_items
+						SET
+							navigation_id		= '" . $_REQUEST['navigation_id'] . "',
+							document_id			= '" . (($_REQUEST['document_id']) ? (int)$_REQUEST['document_id'] : '') . "',
+							title				= '" . $this->_replace_wildcode($_REQUEST['title']) . "',
+							alias				= '" . $_REQUEST['alias'] . "',
+							description			= '" . $this->_replace_wildcode($_REQUEST['description']) . "',
+							image				= '" . $_REQUEST['image'] . "',
+							css_class			= '" . $_REQUEST['css_class'] . "',
+							css_id				= '" . $_REQUEST['css_id'] . "',
+							target				= '" . $_REQUEST['target'] . "',
+							parent_id			= '" . $after['parent_id'] . "',
+							level				= '" . $after['level'] . "',
+							position			= '" . $after['position'] . "',
+							status				= '" . $status . "'
+					");
+
+					$navigation_item_id = $AVE_DB->getLastInsertId();
 				}
-			}
+
+				$message = 'Пункт меню успешно сохранен';
+				$header = 'Выполнено';
+				$theme = 'accept';
+
+				echo json_encode(
+					array(
+						'message' => $message,
+						'header' => $header,
+						'theme' => $theme,
+						'after' => $_REQUEST['after'],
+						'item_id' => $navigation_item_id)
+						);
+			exit;
 		}
+/*
+		// Сохраняем системное сообщение в журнал
+		reportLog($AVE_Template->get_config_vars('NAVI_REPORT_ADDIT') . " (" . $this->_replace_wildcode($title) . ") - ". $AVE_Template->get_config_vars('NAVI_REPORT_TLEV'));
 
 		// Выполняем обновление страницы
 		header('Location:index.php?do=navigation&action=entries&id=' . $nav_id . '&cp=' . SESSION);
 		exit;
+*/
 	}
 
 
@@ -747,33 +701,42 @@ class AVE_Navigation
 
 		// Выполняем запрос к БД и получаем ID пункта меню, с которым связан документ
 		$sql = $AVE_DB->Query("
-			SELECT Id
-			FROM " . PREFIX . "_navigation_items
-			WHERE navi_item_link = 'index.php?id=" . $document_id . "'
+			SELECT
+				navigation_item_id
+			FROM
+				" . PREFIX . "_navigation_items
+			WHERE
+				document_id = '" . $document_id . "'
 		");
 
-		while ($row = $sql->fetchrow())
+		while ($row = $sql->FetchRow())
 		{
 			// Выполняем запрос к БД для определения у удаляемого пункта подпунктов
 			$num = $AVE_DB->Query("
-				SELECT Id
-				FROM " . PREFIX . "_navigation_items
-				WHERE parent_id = '" . $row->Id . "'
+				SELECT
+					navigation_item_id
+				FROM
+					" . PREFIX . "_navigation_items
+				WHERE
+					parent_id = '" . $row->navigation_item_id . "'
 				LIMIT 1
 			")->NumRows();
 
 			// Если данный пункт имеет подпункты, тогда
-			if ($num==1)
+			if ($num == 1)
 			{
 				// Выполняем запрос к БД и деактивируем пункт меню
 				$AVE_DB->Query("
-					UPDATE " . PREFIX . "_navigation_items
-					SET navi_item_status = '0'
-					WHERE Id = '" . $row->Id . "'
+					UPDATE
+						" . PREFIX . "_navigation_items
+					SET
+						status = '0'
+					WHERE
+						navigation_item_id = '" . $row->navigation_item_id . "'
 				");
 
 				// Сохраняем системное сообщение в журнал
-				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DEACT') . " (id: $row->Id)");
+				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DEACT') . " (id: $row->navigation_item_id)");
 			}
 			else
 			{ // В противном случае, если данный пункт не имеет подпунктов, тогда
@@ -781,16 +744,23 @@ class AVE_Navigation
 				// Выполняем запрос к БД и удаляем помеченный пункт
 				$AVE_DB->Query("
 					DELETE
-					FROM " . PREFIX . "_navigation_items
-					WHERE Id = '" . $row->Id . "'
+					FROM
+						" . PREFIX . "_navigation_items
+					WHERE
+						navigation_item_id = '" . $row->navigation_item_id . "'
 				");
 
 				// Сохраняем системное сообщение в журнал
-				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DELIT') . " (id: $row->Id)");
+				reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DELIT') . " (id: $row->navigation_item_id)");
 			}
 		}
 	}
 
+
+	function navigationItemSave()
+	{
+		Debug::_print($_REQUEST, true);
+	}
 
 
 	/**
@@ -803,27 +773,35 @@ class AVE_Navigation
 	{
 		global $AVE_DB, $AVE_Template;
 
-		if (!is_numeric($document_id)) return;
+		if (!is_numeric($document_id))
+			return;
 
 		// Выполняем запрос к БД и получаем id пункта меню, который соответствует идентификатору документа в ссылке
 		$sql = $AVE_DB->Query("
-			SELECT Id
-			FROM " . PREFIX . "_navigation_items
-			WHERE navi_item_link = 'index.php?id=" . $document_id . "'
-			AND navi_item_status = '0'
+			SELECT
+				navigation_item_id
+			FROM
+				" . PREFIX . "_navigation_items
+			WHERE
+				document_id = '" . $document_id . "'
+			AND
+				status = '0'
 		");
 
 		while ($row = $sql->fetchrow())
 		{
 			// Выполняем запрос к БД изменяем статус пункта меню на активный (1)
 			$AVE_DB->Query("
-				UPDATE " . PREFIX . "_navigation_items
-				SET navi_item_status = '1'
-				WHERE Id = '" . $row->Id . "'
+				UPDATE
+					" . PREFIX . "_navigation_items
+				SET
+					status = '1'
+				WHERE
+					navigation_item_id = '" . $row->navigation_item_id . "'
 			");
 
 			// Сохраняем системное сообщение в журнал
-			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_ACT') . " (id: $row->Id)");
+			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_ACT') . " (id: $row->navigation_item_id)");
 		}
 	}
 
@@ -837,30 +815,189 @@ class AVE_Navigation
 	{
 		global $AVE_DB, $AVE_Template;
 
-		if (!is_numeric($document_id)) return;
+		if (!is_numeric($document_id))
+			return;
 
-		// Выполняем запрос к БД и получаем id пункта меню, который соответствует идентификатору документа в ссылке
+		// Выполняем запрос к БД и получаем id пункта меню,
+		// который соответствует идентификатору документа в ссылке
 		$sql = $AVE_DB->Query("
-			SELECT Id
-			FROM " . PREFIX . "_navigation_items
-			WHERE navi_item_link = 'index.php?id=" . $document_id . "'
-			AND navi_item_status = '1'
+			SELECT
+				navigation_item_id
+			FROM
+				" . PREFIX . "_navigation_items
+			WHERE
+				document_id = '" . $document_id . "'
+			AND
+				status = '1'
 		");
 
 		while ($row = $sql->fetchrow())
 		{
 			// Выполняем запрос к БД изменяем статус пункта меню на неактивный (0)
 			$AVE_DB->Query("
-				UPDATE " . PREFIX . "_navigation_items
-				SET navi_item_status = '0'
-				WHERE Id = '" . $row->Id . "'
+				UPDATE
+					" . PREFIX . "_navigation_items
+				SET
+					status = '0'
+				WHERE
+					navigation_item_id = '" . $row->navigation_item_id . "'
 			");
 
 			// Сохраняем системное сообщение в журнал
-			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DEACT') . " (id: $row->Id)");
-
+			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DEACT') . " (id: $row->navigation_item_id)");
 		}
 	}
+
+	/**
+	 * Метод, предназначенный для активации пункта меню навигации.
+	 * Данный метод используется при изменении статуса документа с идентификатором $document_id
+	 *
+	 * @param int $document_id идентификатор документа на который ссылается пункт меню
+	 */
+	function navigationItemGet($navigation_item_id)
+	{
+		global $AVE_DB, $AVE_Template;
+
+		if (!is_numeric($navigation_item_id))
+			return;
+
+		// Выполняем запрос к БД и получаем id пункта меню, который соответствует идентификатору документа в ссылке
+		$item = $AVE_DB->Query("
+			SELECT
+				*
+			FROM
+				" . PREFIX . "_navigation_items
+			WHERE
+				navigation_item_id = '" . $navigation_item_id . "'
+		")->FetchAssocArray();
+
+		if ($item['document_id'])
+			$doc_info = get_document((int)$item['document_id']);
+			$item['document_title'] = (($doc_info['document_breadcrum_title']) ? $doc_info['document_breadcrum_title'] : $doc_info['document_title']);
+			$item['document_alias'] = $doc_info['document_alias'];
+
+		$AVE_Template->assign('item', $item);
+		$AVE_Template->assign('content', $AVE_Template->fetch('navigation/item.tpl'));
+	}
+
+	/**
+	 * Метод, предназначенный для рекурсивоной
+	 * сортировки пунктов меню навигации.
+	 */
+	function navigationSort()
+	{
+		global $AVE_DB, $AVE_Template;
+
+		$level = 1;
+
+		$navigation_id = (int)$_REQUEST['navigation_id'];
+
+		foreach ($_REQUEST['data'] as $item_id => $item)
+		{
+			$AVE_DB->Query("
+				UPDATE
+					" . PREFIX . "_navigation_items
+				SET
+					level			= '" . $level . "',
+					parent_id		= '0',
+					position		= '" . (int)$item_id . "'
+				WHERE
+					navigation_item_id = " . $item['id'] ."
+				AND
+					navigation_id = " . $navigation_id . "
+			");
+
+			if (is_array($item['children']))
+			{
+				$this->navigationSortNested($item['children'], $item['id'], $level, $navigation_id);
+			}
+		}
+
+		if (isAjax())
+		{
+			echo json_encode(
+				array(
+					'message' => $AVE_Template->get_config_vars('NAVI_SORTED'),
+					'header' => $AVE_Template->get_config_vars('NAVI_REPORT_SUCCESS'),
+					'theme' => 'accept'
+					)
+				);
+		}
+
+		exit;
+	}
+
+	/**
+	 * Метод, предназначенный для рекурсивоной
+	 * сортировки пунктов меню навигации.
+	 */
+	function navigationSortNested($array = array(), $parent_id = null, $level = null, $navigation_id = null)
+	{
+		global $AVE_DB;
+
+		$level++;
+
+		foreach($array as $key => $value)
+		{
+			$AVE_DB->Query("
+				UPDATE
+					" . PREFIX . "_navigation_items
+				SET
+					level			= '" . $level . "',
+					parent_id		= '" . (int)$parent_id . "',
+					position		= '" . $key . "'
+				WHERE
+					navigation_item_id = " . $value['id'] . "
+				AND
+					navigation_id = " . $navigation_id . "
+			");
+
+			if (is_array($value['children']))
+			{
+				$this->navigationSortNested($value['children'], $value['id'], $level, $navigation_id);
+			}
+		}
+	}
+
+
+	function getDocumentById($doc_id = null)
+	{
+		$document = get_document($doc_id);
+
+		echo json_encode(
+			array(
+				'doc_id' => $doc_id,
+				'document_title' => $document['document_title'],
+				'document_alias' => $document['document_alias']
+			)
+		);
+		exit;
+	}
+
+
+	function navigationItemStatus($navigation_item_id, $status = 1)
+	{
+		global $AVE_DB;
+
+		$AVE_DB->Query("
+			UPDATE
+				" . PREFIX . "_navigation_items
+			SET
+				status			= '" . $status . "'
+			WHERE
+				navigation_item_id = '" . $navigation_item_id . "'
+		");
+
+		echo json_encode(
+			array(
+				'status' => ($status == 0 ? 1 : 0)
+				)
+		);
+
+		exit;
+	}
+
+
 }
 
 ?>
