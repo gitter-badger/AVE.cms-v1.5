@@ -187,37 +187,6 @@ class AVE_Document
 		$ex_docstatus = '';
 		$navi_docstatus = '';
 
-		$AVE_Template->assign('catalog', get_field_catalog(7,'search'));
-
-		$brand = $this->_documentFieldGet('doc_from_rub',$_REQUEST['brand'], 43, 5);
-		$brand = str_replace(array('<select name="feld[43]" style="width: 400px;">'), array('<select name="brand"><option value="">Выберите производителя</option>'), $brand);
-		$AVE_Template->assign('brand', $brand);
-
-		if ($_REQUEST['catalog'] || $_REQUEST['article'] || $_REQUEST['brand'])
-		{
-			$_REQUEST['rubric_id'] = 7;
-			if ($_REQUEST['catalog'])
-			{
-				require_once(BASE_DIR . '/modules/catalog/class.catalog.php');
-				$catalog = new Catalog;
-				$items = $catalog->getChildrenIds($_REQUEST['catalog']);
-				$items[] = $_REQUEST['catalog'];
-				$sql_join_cat = " LEFT JOIN " . PREFIX . "_document_fields AS df_cat ON doc.Id = df_cat.document_id ";
-				$where = "df_cat.field_value LIKE '%|" . implode("|%' OR df_cat.field_value LIKE '%|",$items) . "|%'";
-				$sql_where_cat = " AND (df_cat.rubric_field_id = '18' AND (" . $where . ")) ";
-			}
-			if ($_REQUEST['article'])
-			{
-				$sql_join_art = " LEFT JOIN " . PREFIX . "_document_fields AS df_art ON doc.Id = df_art.document_id ";
-				$sql_where_art = " AND (df_art.rubric_field_id = '44' AND df_art.field_value LIKE '%" . $_REQUEST['article'] . "%') ";
-			}
-			if ($_REQUEST['brand'])
-			{
-				$sql_join_brand = " LEFT JOIN " . PREFIX . "_document_fields AS df_brand ON doc.Id = df_brand.document_id ";
-				$sql_where_brand = " AND (df_brand.rubric_field_id = '43' AND df_brand.field_value = '" . (int)$_REQUEST['brand'] . "') ";
-			}
-		}
-
 		// Если в запросе пришел параметр на поиск документа по названию
 		if (!empty($_REQUEST['QueryTitel']))
 		{
@@ -332,9 +301,6 @@ class AVE_Document
 			SELECT COUNT(doc.Id)
 			FROM " . PREFIX . "_documents as doc
 			". @$ex_db ."
-			" . $sql_join_cat . "
-			" . $sql_join_art . "
-			" . $sql_join_brand . "
 			WHERE 1
 			" . $ex_delete . "
 			" . $ex_time . "
@@ -342,9 +308,6 @@ class AVE_Document
 			" . $ex_rub . "
 			" . $ex_docstatus . "
 			" . $w_id . "
-			" . $sql_where_cat . "
-			" . $sql_where_art . "
-			" . $sql_where_brand . "
 		")->GetCell();
 
 		// Определяем лимит документов, который будет показан на 1 странице
@@ -495,9 +458,6 @@ class AVE_Document
 				rub.rubric_admin_teaser_template
 			FROM " . PREFIX . "_documents as doc
 			LEFT JOIN " . PREFIX . "_rubrics AS rub ON rub.Id = doc.rubric_id
-			" . $sql_join_cat . "
-			" . $sql_join_art . "
-			" . $sql_join_brand . "
 
 			WHERE 1
 			" . $ex_rub . "
@@ -506,9 +466,6 @@ class AVE_Document
 			" . $ex_titel . "
 			" . $ex_docstatus . "
 			" . $w_id . "
-			" . $sql_where_cat . "
-			" . $sql_where_art . "
-			" . $sql_where_brand . "
 			" . $db_sort . "
 			LIMIT " . $start . "," . $limit . "
 		";

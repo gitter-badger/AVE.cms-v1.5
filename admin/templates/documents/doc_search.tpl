@@ -142,20 +142,6 @@
 			</td>
 		</tr>
 
-		{if $smarty.request.rubric_id == 7}
-		<tr>
-			<td><strong>Каталог:</strong></td>
-			<td colspan="3">{$catalog}</td>
-			<td><strong>Артикул:</strong></td>
-			<td><input style="width:100%" type="text" name="article" value="{$smarty.request.article|escape|stripslashes}" placeholder="Артикул" /></td>
-		</tr>
-		<tr>
-			<td><strong>Производитель:</strong></td>
-			<td>{$brand}</td>
-			<td colspan="4"></td>
-		</tr>
-		{/if}
-
 		<tr>
 			<td colspan="6">
 				<label class="inline">{#MAIN_RESULTS_ON_PAGE#}</label>&nbsp;
