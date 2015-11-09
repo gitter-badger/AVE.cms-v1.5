@@ -113,7 +113,6 @@
 		<div class="pr12">
 			<input type="radio" name="use_editor" value="0"{if $row.use_editor==0} checked{/if} /><label style="cursor: pointer;">{#SETTINGS_EDITOR_CKEDITOR#}</label>&nbsp;
 			<input type="radio" name="use_editor" value="1"{if $row.use_editor==1} checked{/if} /><label style="cursor: pointer;">{#SETTINGS_EDITOR_ELFINDER#}</label>&nbsp;
-			<input type="radio" name="use_editor" value="2"{if $row.use_editor==2} checked{/if} /><label style="cursor: pointer;" class="topDir" title="{#SETTINGS_EDITOR_INNOVA_SET#}">{#SETTINGS_EDITOR_INNOVA#}</label>
 		</div>
 	</td>
 </tr>

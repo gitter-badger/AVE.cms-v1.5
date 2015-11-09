@@ -170,3 +170,4 @@ REQUEST_REPORT_ERR_PHP   = "Запрещено использовать PHP ко
 REQUEST_REPORT_ERR_PHP_N = "Попытка использования PHP кода в шаблоне запроса при создании запроса"
 REQUEST_REPORT_ERR_PHP_E = "Попытка использования PHP кода в шаблоне запроса"
 REQUEST_REPORT_ERR_RUBRIC= "Не выбрана рубрика"
+REQUEST_BY_PARENT   	   = "Родительскому документу"

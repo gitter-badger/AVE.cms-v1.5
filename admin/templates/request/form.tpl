@@ -191,7 +191,7 @@ function changeRub(select) {ldelim}
 							{/if}
 
 							{foreach  from=$field_group.fields item=field}
-								<option value="{$field.rubric_field_alias|escape}">{$field.rubric_field_title|escape}</option>
+								<option value="{$field.Id|escape}" {if $row->request_order_by_nat == $field.Id}selected{/if}>{$field.rubric_field_title|escape}</option>
 							{/foreach}
 
 							{if $groups_count > 1}
@@ -206,12 +206,14 @@ function changeRub(select) {ldelim}
 					<td>
 						<select {$dis} style="width:250px" name="request_order_by" id="request_order_by" class="mousetrap">
 							<option value="">&nbsp;</option>
+							<option value="Id"{if $row->request_order_by=='Id'} selected="selected"{/if}>Id</option>
 							<option value="document_published"{if $row->request_order_by=='document_published'} selected="selected"{/if}>{#REQUEST_BY_DATE#}</option>
 							<option value="document_changed"{if $row->request_order_by=='document_changed'} selected="selected"{/if}>{#REQUEST_BY_DATECHANGE#}</option>
 							<option value="document_title"{if $row->request_order_by=='document_title'} selected="selected"{/if}>{#REQUEST_BY_NAME#}</option>
 							<option value="document_author_id"{if $row->request_order_by=='document_author_id'} selected="selected"{/if}>{#REQUEST_BY_EDIT#}</option>
 							<option value="document_count_print"{if $row->request_order_by=='document_count_print'} selected="selected"{/if}>{#REQUEST_BY_PRINTED#}</option>
 							<option value="document_count_view"{if $row->request_order_by=='document_count_view'} selected="selected"{/if}>{#REQUEST_BY_VIEWS#}</option>
+							<option value="document_parent"{if $row->request_order_by=='document_parent'} selected="selected"{/if}>{#REQUEST_BY_PARENT#}</option>
 							<option value="RAND()"{if $row->request_order_by=='RAND()'} selected="selected"{/if}>{#REQUEST_BY_RAND#}</option>
 						</select>
 					</td>

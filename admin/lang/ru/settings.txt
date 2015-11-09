@@ -75,8 +75,6 @@ SETTINGS_VALUE          = "Значение"
 SETTINGS_USE_EDITOR      = "Редактор по умолчанию"
 SETTINGS_EDITOR_ELFINDER = "Elrte и Elfinder"
 SETTINGS_EDITOR_CKEDITOR = "CKEditor"
-SETTINGS_EDITOR_INNOVA = "LiveEditor"
-SETTINGS_EDITOR_INNOVA_SET = "<ul><li>После выбора и сохранения LiveEditor</li><li>в качестве редактора по умолчанию</li><li>в левом сайдбаре перейдите по ссылке</li><li>для активации и управлением редактора</li></ul>"
 
 SETTINGS_ERROR = "Ошибка"
 SETTINGS_SUCCESS = "Выполнено"
