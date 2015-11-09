@@ -45,12 +45,12 @@ function get_field_date($field_value, $action, $field_id=0, $tpl='', $tpl_empty=
 			$field_value = clean_php($field_value);
 			if ($tpl_empty)
 			{
-				$field_value = pretty_date(strftime(TIME_FORMAT, $field_value));
+				$value = pretty_date(strftime(TIME_FORMAT, $field_value));
 			}
 			else
 			{
-				$field_value = preg_replace('/\[tag:parametr:(\d+)\]/ie', '@$field_value', $tpl);
-				return $res = $field_value;
+				$value = preg_replace('/\[tag:parametr:(\d+)\]/ie', '@$field_value', $tpl);
+				return $res = $value;
 			}
 
 			$tpl_file = get_field_tpl($tpl_dir, $field_id, 'doc');
@@ -68,12 +68,12 @@ function get_field_date($field_value, $action, $field_id=0, $tpl='', $tpl_empty=
 			$field_value = clean_php($field_value);
 			if ($tpl_empty)
 			{
-				$field_value = pretty_date(strftime(TIME_FORMAT, $field_value));
+				$value = pretty_date(strftime(TIME_FORMAT, $field_value));
 			}
 			else
 			{
-				$field_value = preg_replace('/\[tag:parametr:(\d+)\]/ie', '@$field_value', $tpl);
-				return $res = $field_value;
+				$value = preg_replace('/\[tag:parametr:(\d+)\]/ie', '@$field_value', $tpl);
+				return $res = $value;
 			}
 
 			$tpl_file = get_field_tpl($tpl_dir, $field_id, 'req');
