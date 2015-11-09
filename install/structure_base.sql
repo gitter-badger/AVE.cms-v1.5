@@ -363,14 +363,6 @@ CREATE TABLE `%%PRFX%%_sysblocks` (
 	PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;#inst#
 
-CREATE TABLE `%%PRFX%%_liveeditor` (
-	`id` mediumint(5) unsigned NOT NULL AUTO_INCREMENT,
-	`liveeditor_name` varchar(255) NOT NULL,
-	`liveeditor_fields` mediumint(2) unsigned NOT NULL,
-	`liveeditor_status` mediumint(1) unsigned NOT NULL,
-	PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;#inst#
-
 CREATE TABLE `%%PRFX%%_templates` (
 	`Id` smallint(3) unsigned NOT NULL AUTO_INCREMENT,
 	`template_title` varchar(255) NOT NULL,
