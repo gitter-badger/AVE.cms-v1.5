@@ -128,9 +128,10 @@ class AVE_SysBlock
 
 		if ((isset($_REQUEST['sysblock_visual']) && $_REQUEST['sysblock_visual'] == 1) ||  $row['sysblock_visual'] == 1)
 		{
-			switch ($_SESSION['use_editor']) {
+			switch ($_SESSION['use_editor'])
+			{
 				case '0': // CKEditor
-					$oCKeditor = new CKeditor(); 
+					$oCKeditor = new CKeditor();
 					$oCKeditor->returnOutput = true;
 					$oCKeditor->config['customConfig'] = 'code.js';
 					$oCKeditor->config['toolbar'] = 'Big';
@@ -139,13 +140,7 @@ class AVE_SysBlock
 					$row['sysblock_text'] = $oCKeditor->editor('sysblock_text', $row['sysblock_text'], $config);
 					break;
 
-				case '1': // Elrte и Elfinder 
-					break;
-
-				case '2': // Innova
-					require(BASE_DIR . "/admin/templates/liveeditor/f_config/li_set_sys.php");
-					$row['sysblock_text']   ='<textarea style="width: 98%; height: 500px;" name="sysblock_text" Id="sysblock_text">' . $row['sysblock_text'] . '</textarea>';
-					$row['sysblock_text']  .= $innova[1];
+				case '1': // Elrte и Elfinder
 					break;
 			}
 			$AVE_Template->assign($row);
@@ -173,7 +168,7 @@ class AVE_SysBlock
 		{
 			switch ($_SESSION['use_editor']) {
 				case '0': // CKEditor
-					$oCKeditor = new CKeditor(); 
+					$oCKeditor = new CKeditor();
 					$oCKeditor->returnOutput = true;
 					$oCKeditor->config['customConfig'] = 'code.js';
 					$oCKeditor->config['toolbar'] = 'Big';
@@ -182,13 +177,7 @@ class AVE_SysBlock
 					$row['sysblock_text'] = $oCKeditor->editor('sysblock_text', $row['sysblock_text'], $config);
 					break;
 
-				case '1': // Elrte и Elfinder 
-					break;
-
-				case '2': // Innova
-					require(BASE_DIR . "/admin/templates/liveeditor/f_config/li_set_sys.php");
-					$row['sysblock_text']   ='<textarea style="width: 98%; height: 500px;" name="sysblock_text" Id="sysblock_text">' . $row['sysblock_text'] . '</textarea>';
-					$row['sysblock_text']  .= $innova[1];
+				case '1': // Elrte и Elfinder
 					break;
 			}
 			$AVE_Template->assign($row);

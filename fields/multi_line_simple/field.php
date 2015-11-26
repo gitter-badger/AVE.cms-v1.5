@@ -37,7 +37,8 @@ function get_field_multi_line_simple($field_value, $action, $field_id=0, $tpl=''
 			else
 			{
 				if (isset($_REQUEST['outside']) && ($_REQUEST['outside'] === (bool)true)) {
-					switch ($_SESSION['use_editor']) {
+					switch ($_SESSION['use_editor'])
+					{
 						case '0':
 						case '1':
 						case '2':
@@ -67,13 +68,6 @@ function get_field_multi_line_simple($field_value, $action, $field_id=0, $tpl=''
 						case '1': // Elrte и Elfinder
 							$field  = '<a name="' . $field_id . '"></a>';
 							$field  .='<textarea style="width: 98%" name="feld[' . $field_id . ']" class="small-editor">' . $field_value . '</textarea>';
-							break;
-
-						case '2': // Innova
-							require(BASE_DIR . "/admin/templates/liveeditor/f_config/li_set_smf.php");
-							$field  = '<a name="' . $field_id . '"></a>';
-							$field .= "<textarea style=\"width: 100%; height: 300px;\"  name=\"feld[" . $field_id . "]\" Id=\"small-editor[" . $field_id . "]\">" . $field_value . "</textarea>";
-							$field  .= $innova[2];
 							break;
 
 						default:

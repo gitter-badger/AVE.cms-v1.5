@@ -69,13 +69,6 @@ function get_field_multi_line_slim($field_value,$action, $field_id=0, $tpl='', $
 							$field  .='<textarea style="width:' . $AVE_Document->_textarea_width_small . ';height:' . $AVE_Document->_textarea_height_small . '" name="feld[' . $field_id . ']" class="small-editor">' . $field_value . '</textarea>';
 							break;
 
-						case '2': // Innova
-							require(BASE_DIR . "/admin/templates/liveeditor/f_config/li_set_smf.php");
-							$field  = '<a name="' . $field_id . '"></a>';
-							$field .= "<textarea style=\"width: 100%; height: 200px;\"  name=\"feld[" . $field_id . "]\" Id=\"small-editor[" . $field_id . "]\">" . $field_value . "</textarea>";
-							$field  .= $innova[2];
-							break;
-
 						default:
 							$field = $field_value;
 							break;

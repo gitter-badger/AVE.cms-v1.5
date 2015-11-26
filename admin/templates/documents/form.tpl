@@ -1,43 +1,24 @@
 {if $smarty.session.use_editor == 0}
-	<script type="text/javascript" src="{$ABS_PATH}admin/ckeditor/ckeditor.js"></script>
-	<script type="text/javascript" src="{$ABS_PATH}admin/ckeditor/vendor/jquery.spellchecker.js"></script>
-	<link rel="stylesheet" href="{$ABS_PATH}admin/ckeditor/vendor/jquery.spellchecker.css" type="text/css" media="all" />
+	<script type="text/javascript" src="{$ABS_PATH}lib/redactor/ckeditor/ckeditor.js"></script>
+	<script type="text/javascript" src="{$ABS_PATH}lib/redactor/ckeditor/vendor/jquery.spellchecker.js"></script>
+	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/ckeditor/vendor/jquery.spellchecker.css" type="text/css" media="all" />
 {/if}
 
 {if $smarty.session.use_editor == 1}
 	<!-- elrte -->
-	<link rel="stylesheet" href="{$ABS_PATH}admin/redactor/elrte/css/elrte.full.css" type="text/css" media="screen" />
-	<script src="{$ABS_PATH}admin/redactor/elrte/js/elrte.full.js" type="text/javascript"></script>
-	<script src="{$ABS_PATH}admin/redactor/elrte/js/i18n/elrte.ru.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/redactor/elrte/css/elrte.full.css" type="text/css" media="screen" />
+	<script src="{$ABS_PATH}lib/redactor/redactor/elrte/js/elrte.full.js" type="text/javascript"></script>
+	<script src="{$ABS_PATH}lib/redactor/redactor/elrte/js/i18n/elrte.ru.js" type="text/javascript"></script>
 
 	<!-- elfinder -->
-	<link rel="stylesheet" href="{$ABS_PATH}admin/redactor/elfinder/css/elfinder.full.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="{$ABS_PATH}admin/redactor/elfinder/css/theme.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/redactor/elfinder/css/elfinder.full.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/redactor/elfinder/css/theme.css" type="text/css" media="screen" />
 
-	<script src="{$ABS_PATH}admin/redactor/elfinder/js/elfinder.full.js" type="text/javascript"></script>
-	<script src="{$ABS_PATH}admin/redactor/elfinder/js/i18n/elfinder.ru.js" type="text/javascript"></script>
-	<script src="{$ABS_PATH}admin/redactor/elfinder/js/jquery.dialogelfinder.js" type="text/javascript"></script>
+	<script src="{$ABS_PATH}lib/redactor/redactor/elfinder/js/elfinder.full.js" type="text/javascript"></script>
+	<script src="{$ABS_PATH}lib/redactor/redactor/elfinder/js/i18n/elfinder.ru.js" type="text/javascript"></script>
+	<script src="{$ABS_PATH}lib/redactor/redactor/elfinder/js/jquery.dialogelfinder.js" type="text/javascript"></script>
 
 	<script type="text/javascript" src="{$tpl_dir}/js/rle.js"></script>
-{/if}
-
-	<!-- liveeditor -->
-{if $smarty.session.use_editor == 2}
-	{literal}
-		<style>
-		.istoolbar_container { padding:0; margin:0}
-		.istoolbar_container tbody tr { border-top: 0px !important; background:transparent !important}
-		.istoolbar_container tbody tr:hover { background:transparent !important}
-		.istoolbar_container tbody td { border-left:0px !important}
-		.istoolbar_container tbody td:hover { background:transparent !important}
-		</style>
-	{/literal}
-
-	<script src="{$ABS_PATH}admin/liveeditor/LiveEditor/scripts/language/ru-RU/editor_lang.js"></script>
-	<script src="{$ABS_PATH}admin/liveeditor/LiveEditor/scripts/innovaeditor.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/webfont/1.5.2/webfont.js" type="text/javascript"></script>
-	<script src="{$ABS_PATH}admin/liveeditor/LiveEditor/scripts/common/webfont.js" type="text/javascript"></script>
-
 {/if}
 
 <script type="text/javascript">

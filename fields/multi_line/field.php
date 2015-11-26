@@ -69,13 +69,6 @@ function get_field_multi_line($field_value, $action, $field_id=0, $tpl='', $tpl_
 							$field  .='<textarea style="width: 98%" name="feld[' . $field_id . ']" class="editor">' . $field_value . '</textarea></div>';
 							break;
 
-						case '2': // Innova
-							require(BASE_DIR . "/admin/templates/liveeditor/f_config/li_set_mf.php");
-							$field  = '<a name="' . $field_id . '"></a>';
-							$field  .='<textarea style="width: 100%; height: 400px;" name="feld[' . $field_id . ']" Id="editor[' . $field_id . ']">' . $field_value . '</textarea>';
-							$field  .= $innova[1];
-							break;
-
 						default:
 							$field = $field_value;
 							break;
