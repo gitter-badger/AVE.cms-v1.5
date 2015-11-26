@@ -405,7 +405,6 @@ class AVE_Core
 
 	/**
 	 * Метод, предназначенный для получения МЕТА-тегов для различных модулей.
-	 * Мета-теги для модуля МАГАЗИН
 	 *
 	 * @return boolean
 	 */
@@ -414,59 +413,20 @@ class AVE_Core
 		global $AVE_DB;
 
 		// Если в запросе не пришел параметр module, заврешаем работу
-		if (! isset($_REQUEST['module'])) return false;
+		if (! isset($_REQUEST['module']))
+			return false;
 
-		// Если в запросе пришло значение shop, для параметра module и не указан id товара, тогда
-		if ($_REQUEST['module'] == 'shop' && empty ($_REQUEST['product_id']))
-		{
-			// Выполняем запрос к БД на получение ОБЩИХ значений мета-тегов, установленных в настройках модуля "Магазин"
-			$this->curentdoc = $AVE_DB->Query("
-				SELECT
-					1 AS Id,
-					0 AS document_published,
-					a.document_meta_robots,
-					b.ShopKeywords AS document_meta_keywords,
-					b.ShopDescription AS document_meta_description
-				FROM
-					" . PREFIX . "_documents AS a,
-					" . PREFIX . "_modul_shop AS b
-				WHERE a.Id = 1
-				AND b.Id = 1
-			")->FetchRow();
-		}
-		// В противном случае, если запрашиваемй модуль "Магазин" и указан id товара, тогда
-		elseif ($_REQUEST['module'] == 'shop' && !empty ($_REQUEST['product_id']) && is_numeric($_REQUEST['product_id']))
-		{
-			// Выполняем запрос к БД и получаем значения мета-тегов для конкретного товара
-			$this->curentdoc = $AVE_DB->Query("
-				SELECT
-					1 AS Id,
-					0 AS document_published,
-					a.document_meta_robots,
-					b.ProdKeywords AS document_meta_keywords,
-					b.ProdDescription AS document_meta_description
-				FROM
-					" . PREFIX . "_documents AS a,
-					" . PREFIX . "_modul_shop_artikel AS b
-				WHERE a.Id = 1
-				AND b.Id = '" . $_REQUEST['product_id'] . "'
-			")->FetchRow();
-		}
-		// Если в запросе модуль не указан, получаем общие мета-теги, установленные для главной (id=1) страницы сайта
-		else
-		{
-			$this->curentdoc = $AVE_DB->Query("
-				SELECT
-					1 AS Id,
-					0 AS document_published,
-					document_meta_robots,
-					document_meta_keywords,
-					document_meta_description,
-					document_title
-				FROM " . PREFIX . "_documents
-				WHERE Id = 1
-			")->FetchRow();
-		}
+		$this->curentdoc = $AVE_DB->Query("
+			SELECT
+				1 AS Id,
+				0 AS document_published,
+				document_meta_robots,
+				document_meta_keywords,
+				document_meta_description,
+				document_title
+			FROM " . PREFIX . "_documents
+			WHERE Id = 1
+		")->FetchRow();
 
 		return (isset($this->curentdoc->Id) && $this->curentdoc->Id == 1);
 	}
@@ -477,46 +437,45 @@ class AVE_Core
 	 * @return int/boolean
 	 */
 	function _coreDocumentIsPublished()
-	{	
+	{
 		//Контроль даты: Использовать/Не использовать
-		if (get_settings('use_doctime')!=0) {
-
-				if (!empty ($this->curentdoc)																				// документ есть
-					&& $this->curentdoc->Id != PAGE_NOT_FOUND_ID															// документ не сообщение ошибки 404
-					&& $this->curentdoc->document_deleted == 1																// пометка удаления
-					)
+		if (get_settings('use_doctime') != 0)
+		{
+			if (!empty ($this->curentdoc)																				// документ есть
+				&& $this->curentdoc->Id != PAGE_NOT_FOUND_ID															// документ не сообщение ошибки 404
+				&& $this->curentdoc->document_deleted == 1																// пометка удаления
+				)
+			{
+				// Если пользователь авторизован в Панели управления или имеет полные права на просмотр документа, тогда
+				if (isset ($_SESSION['adminpanel']) || isset ($_SESSION['alles']))
 				{
-					// Если пользователь авторизован в Панели управления или имеет полные права на просмотр документа, тогда
-					if (isset ($_SESSION['adminpanel']) || isset ($_SESSION['alles']))
-					{
-						// Отображаем информационное окно с сообщением, определенным в свойстве _doc_not_published
-						display_notice($this->_doc_not_published);
-					}
-					else // В противном случае фиксируем ошибку
-					{
-						$this->curentdoc = false;
-					}
+					// Отображаем информационное окно с сообщением, определенным в свойстве _doc_not_published
+					display_notice($this->_doc_not_published);
 				}
-
-		} else {
-
-				if (!empty ($this->curentdoc)																				// документ есть
-					&& $this->curentdoc->Id != PAGE_NOT_FOUND_ID															// документ не сообщение ошибки 404
-					&& $this->curentdoc->document_deleted == 1																// пометка удаления
-					)
+				else // В противном случае фиксируем ошибку
 				{
-					// Если пользователь авторизован в Панели управления или имеет полные права на просмотр документа, тогда
-					if (isset ($_SESSION['adminpanel']) || isset ($_SESSION['alles']))
-					{
-						// Отображаем информационное окно с сообщением, определенным в свойстве _doc_not_published
-						display_notice($this->_doc_not_published);
-					}
-					else // В противном случае фиксируем ошибку
-					{
-						$this->curentdoc = false;
-					}
+					$this->curentdoc = false;
 				}
-
+			}
+		}
+		else
+		{
+			if (! empty($this->curentdoc)																				// документ есть
+				&& $this->curentdoc->Id != PAGE_NOT_FOUND_ID															// документ не сообщение ошибки 404
+				&& $this->curentdoc->document_deleted == 1																// пометка удаления
+				)
+			{
+				// Если пользователь авторизован в Панели управления или имеет полные права на просмотр документа, тогда
+				if (isset ($_SESSION['adminpanel']) || isset ($_SESSION['alles']))
+				{
+					// Отображаем информационное окно с сообщением, определенным в свойстве _doc_not_published
+					display_notice($this->_doc_not_published);
+				}
+				else // В противном случае фиксируем ошибку
+				{
+					$this->curentdoc = false;
+				}
+			}
 		}
 		return (! empty($this->curentdoc));
 	}
@@ -544,12 +503,14 @@ class AVE_Core
 		{
 			$path = '/templates/' . THEME_FOLDER . '/' . $type . '/';
 		}
+
 		// уровень вложенности
 		$level = substr_count($path,'/') - 1;
 
 		// копируем combine.php, если он поменялся или отсутствует
 		$dest_stat = stat(BASE_DIR . $path . 'combine.php');
 		$source_stat = stat(BASE_DIR . '/lib/combine/combine.php');
+
 		if (!file_exists(BASE_DIR . $path . 'combine.php') || $source_stat[9] > $dest_stat[9])
 		{
 			@copy(BASE_DIR . '/lib/combine/combine.php', BASE_DIR . $path . 'combine.php');
@@ -701,27 +662,35 @@ class AVE_Core
 		$main_content = '';
 
 		// Если происходит вызов модуля, получаем соответствующие мета-теги и получаем шаблон модуля
-		if (isset($_REQUEST['module']) && !empty($_REQUEST['module'])) {
+		if (isset($_REQUEST['module']) && !empty($_REQUEST['module']))
+		{
 			$out = $this->_coreModuleMetatagsFetch();
 			$out = $this->_coreDocumentTemplateGet('', '', $this->_coreModuleTemplateGet());
 		}
 		elseif (isset($_REQUEST['sysblock']) && !empty($_REQUEST['sysblock']))
 		{
 			// проверяем разрешение на внешнее обращение
-			if (!$this->_sysBlock((int)$_REQUEST['sysblock'], 'sysblock_external')) {
+			if (!$this->_sysBlock((int)$_REQUEST['sysblock'], 'sysblock_external'))
+			{
 				header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true);
 				exit;
 			}
 
 			// проверяем разрешение на обращение только по Ajax
-			if ($this->_sysBlock((int)$_REQUEST['sysblock'], 'sysblock_ajax')) {
-				if ( isAjax() ){
+			if ($this->_sysBlock((int)$_REQUEST['sysblock'], 'sysblock_ajax'))
+			{
+				if ( isAjax() )
+				{
 					$out = parse_sysblock((int)$_REQUEST['sysblock']);
-				} else {
+				}
+				else
+				{
 					header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true);
 					exit;
 				}
-			} else {
+			}
+			else
+			{
 				$out = parse_sysblock((int)$_REQUEST['sysblock']);
 			}
 
@@ -861,7 +830,9 @@ class AVE_Core
 						$main_content = str_replace('[tag:/if]', '<?php } ?>', $main_content);
 
 						// Парсим теги полей документа в шаблоне рубрики
+						$main_content = preg_replace_callback('/\[tag:fld:([a-zA-Z0-9-_]+)\]\[([0-9]+)]\[([0-9]+)]/', 'return_element', $main_content);
 						$main_content = preg_replace_callback('/\[tag:fld:([a-zA-Z0-9-_]+)\]/', 'document_get_field', $main_content);
+						$main_content = preg_replace_callback('/\[tag:fld:([a-zA-Z0-9-_]+)\]\[([0-9]+)]\[([0-9]+)]/', 'return_element', $main_content);
 						$main_content = preg_replace_callback('/\[tag:watermark:(.+?):([a-zA-Z]+):([0-9]+)\]/', 'watermarks', $main_content);
 						$main_content = preg_replace_callback('/\[tag:([r|c|f|t]\d+x\d+r*):(.+?)]/', 'callback_make_thumbnail', $main_content);
 
@@ -922,7 +893,8 @@ class AVE_Core
 		*/
 
 		// Тут мы вводим в хеадер иньекцию скриптов.
-		if(defined('RUB_ID')){
+		if(defined('RUB_ID'))
+		{
 			$rubheader = $this->curentdoc->rubric_header_template;
 			$out = str_replace('[tag:rubheader]', $rubheader.'[tag:rubheader]', $out);
 		}
@@ -1034,9 +1006,9 @@ class AVE_Core
 			$search[] 	= '[tag:title]';
 			$replace[] 	= htmlspecialchars(defined('MODULE_TITLE') ? MODULE_TITLE : '', ENT_QUOTES);
 			$search[] 	= '[tag:description]';
-			$replace[] 	= htmlspecialchars(defined('MODULE_DESCRIPTION') ? MODULE_DESCRIPTION : '', ENT_QUOTES); 
+			$replace[] 	= htmlspecialchars(defined('MODULE_DESCRIPTION') ? MODULE_DESCRIPTION : '', ENT_QUOTES);
 			$search[] 	= '[tag:keywords]';
-			$replace[] 	= htmlspecialchars(defined('MODULE_KEYWORDS') ? MODULE_KEYWORDS : '', ENT_QUOTES); 
+			$replace[] 	= htmlspecialchars(defined('MODULE_KEYWORDS') ? MODULE_KEYWORDS : '', ENT_QUOTES);
 		}
 		elseif (isset($_REQUEST['sysblock']))
 		{
@@ -1102,7 +1074,8 @@ class AVE_Core
 		$out = str_replace('[tag:/lang]', '<?php } ?>', $out);
 
 		// Парсим хлебные крошки
-		if (preg_match('/\[tag:breadcrumb]/u', $out)) {
+		if (preg_match('/\[tag:breadcrumb]/u', $out))
+		{
 			$out = preg_replace_callback('/\[tag:breadcrumb\]/', 'get_breadcrumb', $out);
 		}
 
@@ -1137,7 +1110,7 @@ class AVE_Core
 		if	(
 			substr($get_url,0,strlen(ABS_PATH.'index.php'))!=ABS_PATH.'index.php'&&strpos($get_url,'?')!==false
 			) $get_url=substr($get_url,0,strpos($get_url,'?'));
-		
+
 		$get_url = rawurldecode($get_url);
 		$get_url = mb_substr($get_url, strlen(ABS_PATH));
 		$test_url = $get_url; // сохранение старого урла для првоерки использования суффикса
@@ -1184,7 +1157,8 @@ class AVE_Core
 		}
 
 		// проверка на наличие id в запросе
-		if(!empty($_REQUEST['id'])) { 
+		if(! empty($_REQUEST['id']))
+		{
 			$get_url = $AVE_DB->Query("SELECT document_alias FROM " . PREFIX . "_documents WHERE Id = '" . (int)$_REQUEST['id'] . "' ")->GetCell();
 		}
 
@@ -1213,7 +1187,7 @@ class AVE_Core
 			WHERE
 				user_group_id = '" . UGROUP . "'
 			AND
-				" . (!empty ($get_url) ? "document_alias = '" . str_ireplace("'","\'",$get_url) . "'" : (!empty($_REQUEST['id']) ? "doc.Id =".intval($_REQUEST['id']) :"doc.Id = 1")) . "
+				" . (!empty ($get_url) ? "document_alias = '" . str_ireplace("'", "\'", $get_url) . "'" : (! empty($_REQUEST['id']) ? "doc.Id =".intval($_REQUEST['id']) :"doc.Id = 1")) . "
 			LIMIT 1
 		");
 
@@ -1222,16 +1196,20 @@ class AVE_Core
 			$_GET['id']  = $_REQUEST['id']  = $this->curentdoc->Id;
 			$_GET['doc'] = $_REQUEST['doc'] = $this->curentdoc->document_alias;
 
-			if($this->curentdoc->Id!=PAGE_NOT_FOUND_ID OR $this->curentdoc->document_lang=='--')
-				$_SESSION['user_language']=$this->curentdoc->document_lang;
+			if($this->curentdoc->Id != PAGE_NOT_FOUND_ID OR $this->curentdoc->document_lang == '--')
+				$_SESSION['user_language'] = $this->curentdoc->document_lang;
 
 			// перенаправление на адреса с суффиксом
-			if ($test_url !== $get_url . URL_SUFF && !$pages && $test_url && !$_REQUEST['print'] && !$_REQUEST['module'] && !$_REQUEST['tag']&& REWRITE_MODE) {
+			if ($test_url !== $get_url . URL_SUFF && !$pages && $test_url && !$_REQUEST['print'] && !$_REQUEST['module'] && !$_REQUEST['tag'] && REWRITE_MODE)
+			{
 				header('HTTP/1.1 301 Moved Permanently');
-				if ($this->curentdoc->Id == 1){
+				if ($this->curentdoc->Id == 1)
+				{
 					header('Location:' . ABS_PATH);
 					exit();
-				}else {
+				}
+				else
+				{
 					header('Location:' . ABS_PATH . $get_url . URL_SUFF);
 					exit();
 				}
@@ -1240,12 +1218,13 @@ class AVE_Core
 		else
 		{
 			$redirect_alias = $AVE_DB->Query("SELECT a.document_alias FROM ".PREFIX."_document_alias_history AS h, ".PREFIX."_documents AS a WHERE h.document_id=a.Id AND h.`document_alias`='" . $get_url . "'")->GetCell();
-			if(!empty($redirect_alias)){
+			if(! empty($redirect_alias))
+			{
 				header('HTTP/1.1 301 Moved Permanently');
 				header('Location:' . ABS_PATH . $redirect_alias . URL_SUFF);
 				exit();
 			}
-			if(!(!empty($_REQUEST['sysblock'])||!empty($_REQUEST['module'])))
+			if(! (! empty($_REQUEST['sysblock']) || ! empty($_REQUEST['module'])))
 				$_GET['id'] = $_REQUEST['id'] = PAGE_NOT_FOUND_ID;
 		}
 	}

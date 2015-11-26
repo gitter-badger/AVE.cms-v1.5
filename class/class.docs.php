@@ -729,7 +729,8 @@ class AVE_Document
 	 *
 	 */
 
-	static function SaveRevission($document_id){
+	static function SaveRevission($document_id)
+	{
 			global $AVE_DB;
 
 			$sql = $AVE_DB->Query("
@@ -739,15 +740,19 @@ class AVE_Document
 					more.field_value as more
 				FROM
 					" . PREFIX . "_document_fields AS doc
-				LEFT JOIN " . PREFIX . "_document_fields_text AS more ON (more.rubric_field_id = doc.rubric_field_id and more.document_id=doc.document_id)
-				WHERE doc.document_id = '" . $document_id . "'
+				LEFT JOIN
+					" . PREFIX . "_document_fields_text AS more
+				ON
+					(more.rubric_field_id = doc.rubric_field_id and more.document_id=doc.document_id)
+				WHERE
+					doc.document_id = '" . $document_id . "'
 			");
 
 			$rows=Array();
 
 			while ($row = $sql->FetchAssocArray())
 			{
-				$row['field_value']=(string)$row['field_value'].(string)$row['more'];
+				$row['field_value'] = (string)$row['field_value'] . (string)$row['more'];
 				$rows[$row['rubric_field_id']] = pretty_chars(clean_no_print_char($row['field_value']));
 			}
 
@@ -760,12 +765,16 @@ class AVE_Document
 			$dorev = false;
 
 			foreach($rows as $k=>$v)
-				if($rows[$k]<>$last_rev[$k]){
+				if($rows[$k] <> $last_rev[$k])
+				{
 					$dorev=true;
 				}
 
-			if($dorev){
-				$AVE_DB->Query("INSERT INTO " . PREFIX . "_document_rev
+			if($dorev)
+			{
+				$AVE_DB->Query("
+				INSERT INTO
+					" . PREFIX . "_document_rev
 				SET
 					doc_id   ='" . $document_id . "',
 					doc_revision ='". $dtime . "',
@@ -773,6 +782,7 @@ class AVE_Document
 					user_id ='".$_SESSION['user_id']."'
 				");
 			}
+
 			return $rows;
 		}
 
@@ -780,7 +790,8 @@ class AVE_Document
 	 * Метод, предназначенный для востановления ревизии документа
 	 *
 	 */
-	function documentRevissionRestore($document_id, $revision, $rubric_id){
+	function documentRevissionRestore($document_id, $revision, $rubric_id)
+	{
 
 		global $AVE_DB, $AVE_Template;
 
@@ -788,7 +799,10 @@ class AVE_Document
 
 		if ( (isset($_SESSION[$rubric_id . '_delrev'])  && $_SESSION[$rubric_id . '_delrev'] == 1)
 			|| (isset($_SESSION[$rubric_id . '_alles']) && $_SESSION[$rubric_id . '_alles']  == 1)
-			|| (defined('UGROUP') && UGROUP == 1) ){ $run = true; }
+			|| (defined('UGROUP') && UGROUP == 1) )
+		{
+			$run = true;
+		}
 
 		if ($run === true)
 		{
@@ -798,31 +812,37 @@ class AVE_Document
 
 			$data = @unserialize($res);
 
-			foreach($data as $k => $v){
-				if($k){
+			foreach($data as $k => $v)
+			{
+				if($k)
+				{
 				$AVE_DB->Query("UPDATE ".PREFIX."_document_fields
 					SET
 						field_value        = '" . mb_substr($v,0,499) . "',
 						field_number_value = '" . preg_replace('/[^\d.]/','',$v) . "'
 					WHERE document_id='".$document_id."' AND rubric_field_id='".$k."'
 				");
-				if(mb_strlen($v)>500)
-				{
-				$AVE_DB->Query("UPDATE ".PREFIX."_document_fields_text
-					SET
-					field_value        = '" . mb_substr($v,500) . "'
-					WHERE document_id='".$document_id."' AND rubric_field_id='".$k."'
-					");
-				}else{
-				$AVE_DB->Query("DELETE FROM ". PREFIX . "_document_fields_text ".'WHERE document_id='.$document_id.' AND rubric_field_id='.$k);
-				}
+					if(mb_strlen($v) > 500)
+					{
+						$AVE_DB->Query("UPDATE ".PREFIX."_document_fields_text
+							SET
+							field_value        = '" . mb_substr($v,500) . "'
+							WHERE document_id='".$document_id."' AND rubric_field_id='".$k."'
+							");
+					}
+					else
+					{
+						$AVE_DB->Query("DELETE FROM ". PREFIX . "_document_fields_text ".'WHERE document_id='.$document_id.' AND rubric_field_id='.$k);
+					}
 				}
 			}
 
 			// Сохраняем системное сообщение в журнал
 			reportLog($AVE_Template->get_config_vars('DOC_REVISION_RECOVER')." (Doc: $document_id Rev: $revision)");
 			header('Location:index.php?do=docs&action=edit&Id=' . (int)$_REQUEST['doc_id'] . '&rubric_id=' . (int)$_REQUEST['rubric_id'] . '&cp=' . SESSION);
-		} else {
+		}
+		else
+		{
 			$AVE_Template->assign('content', $AVE_Template->get_config_vars('DOC_NO_RES_REVISION'));
 		}
 	}
@@ -875,15 +895,17 @@ class AVE_Document
 	 * возвращает номер документа если все удачно и false если все плохо
 	 */
 
-	function documentSave($rubric_id, $document_id, $data, $update_non_exists_fields = false, $rubric_code = true){
+	function documentSave($rubric_id, $document_id, $data, $update_non_exists_fields = false, $rubric_code = true, $revisions = true)
+	{
 
 		global $AVE_DB;
 
 		//Проверяем входящие данные
 		$rubric_id 		=(int)$rubric_id;
 		$document_id 	=(int)$document_id;
-		if(!isset($data)) 			return false;
-		if(!isset($data['feld']))	return false;
+
+		if(! isset($data)) 			return false;
+		if(! isset($data['feld']))	return false;
 
 		//определяем тип опреации
 		$oper = 'INSERT';
@@ -903,7 +925,8 @@ class AVE_Document
 			|| (isset($_SESSION[$rubric_id . '_alles']) && $_SESSION[$rubric_id . '_alles']  == 1)
 			|| (defined('UGROUP') && UGROUP == 1) )) return false;
 
-		if($oper == 'UPDATE'){
+		if($oper == 'UPDATE')
+		{
 				// Выполняем запрос к БД на получение автора документа и id Рубрики
 				$row = $AVE_DB->Query("
 					SELECT
@@ -986,6 +1009,7 @@ class AVE_Document
 					$data['document_alias'] = $_url = prepare_url(empty($data['document_alias']) ? trim($data['prefix'] . '/' . $data['doc_title'], '/') : $data['document_alias']);
 
 					$cnt = 1;
+
 					while (
 						$AVE_DB->Query("
 							SELECT 1
@@ -1039,8 +1063,10 @@ class AVE_Document
 							");
 						}
 
-						if (isset($_REQUEST['field_module'])) {
-							while(list($mod_key, $mod_val) = each($_REQUEST['field_module'])) {
+						if (isset($_REQUEST['field_module']))
+						{
+							while(list($mod_key, $mod_val) = each($_REQUEST['field_module']))
+							{
 								require_once(BASE_DIR . '/modules/' . $mod_val . '/document.php');
 								$mod_function = (string)$mod_val . '_document_save';
 								$fields = $mod_function($mod_key, $mod_val, $sql, $data['feld'][$mod_key], $mod_key);
@@ -1088,7 +1114,9 @@ class AVE_Document
 							$where";
 						$AVE_DB->Query($sql);
 
-					if ($oper=='UPDATE') $this->SaveRevission($document_id);
+					// Сохраняем ревизию документа
+					if ($oper == 'UPDATE' && $revision)
+						$this->SaveRevission($document_id);
 
 					// Получаем id добавленной записи
 					$iid = $AVE_DB->InsertId();
@@ -1108,7 +1136,6 @@ class AVE_Document
 						($AVE_DB->Query("SELECT 1 FROM " . PREFIX . "_document_alias_history WHERE document_alias = '" . $data['document_alias_old'] . "' LIMIT 1 ")->NumRows() == 0)
 					)
 					{
-
 						$AVE_DB->Query("
 							INSERT INTO " . PREFIX . "_document_alias_history
 							SET
@@ -1117,7 +1144,6 @@ class AVE_Document
 							document_alias_author     = '" . $_SESSION['user_id'] . "',
 							document_alias_changed     = '" . time() . "'
 						");
-
 					}
 
 					// Сохраняем системное сообщение в журнал
@@ -1129,7 +1155,7 @@ class AVE_Document
 						$fld_id = $v->Id;
 
 						//если в данных нет поля и мы редактируем документ - изменять ли это поле на пустое значение
-						if($oper== 'UPDATE' && (!(isset($data['feld'][$fld_id]))) && !$update_non_exists_fields) continue;
+						if($oper== 'UPDATE' && (! (isset($data['feld'][$fld_id]))) && !$update_non_exists_fields) continue;
 						$fld_val = (isset($data['feld'][$fld_id]) ? $data['feld'][$fld_id] : $v->rubric_field_default);
 
 						if (!$AVE_DB->Query("
@@ -3264,9 +3290,12 @@ class AVE_Document
 			//reportLog($AVE_Template->get_config_vars('RUBRIK_CODE_UPDATE') . " (" . stripslashes(htmlspecialchars($this->rubricNameByIdGet($rubric_id)->rubric_title, ENT_QUOTES)) . ") (id: $rubric_id)");
 		}
 
-		if (isAjax()) {
+		if (isAjax())
+		{
 			echo json_encode(array('message' => $message, 'header' => $header, 'theme' => $theme));
-		} else {
+		}
+		else
+		{
 			header('Location:index.php?do=docs&action=aliases_doc&cp=' . SESSION);
 		}
 		exit;

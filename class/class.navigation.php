@@ -33,10 +33,10 @@ class AVE_Navigation
 	 */
 	function _replace_wildcode($text)
 	{
-		$text = html_entity_decode($text,ENT_QUOTES,'UTF-8');
-		$text = preg_replace('/\s/i',' ',$text);
-		$text = str_replace(array('ô','ç','é','è','ä','à','â','ü','ñ'),array('o','c','e','e','a','a','a','u','n'), $text);
-		$text = htmlspecialchars($text, ENT_QUOTES, '"&><\'');
+		//$text = html_entity_decode($text,ENT_QUOTES,'UTF-8');
+		//$text = preg_replace('/\s/i',' ',$text);
+		//$text = str_replace(array('ô','ç','é','è','ä','à','â','ü','ñ'),array('o','c','e','e','a','a','a','u','n'), $text);
+		//$text = htmlspecialchars($text, ENT_QUOTES, '"&><\'');
 		return $text;
 	}
 

@@ -501,4 +501,16 @@ function get_element($field_id, $item_id = 0, $parametr = null, $doc_id = null)
 	return $field;
 }
 
+/**
+ * Возвращает элемент сериализованного поля по номеру и ключу, через тег [tag:fld:XXX][XXX][XXX]
+ *
+ * @return string
+ */
+function return_element ()
+{
+	$param = func_get_args();
+	$return = get_element($param[0][1], $param[0][2], $param[0][3]);
+	return $return;
+}
+
 ?>
