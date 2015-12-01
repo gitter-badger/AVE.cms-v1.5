@@ -136,6 +136,8 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение" onclick="textSelection_1_2('[tag:img]','');">[tag:img]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение активное, в конце названия изображения должно быть _act" onclick="textSelection_1_2('[tag:linkid]','');">[tag:img_act]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_1_2('[tag:img_id]','');">[tag:img_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS ID" onclick="textSelection_1_2('[tag:css_id]','');">[tag:css_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS Class" onclick="textSelection_1_2('[tag:css_class]','');">[tag:css_class]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Место вставки подуровня" onclick="textSelection_1_2('[tag:level:2]','');">[tag:level:2]</a></strong>
 			</td>
 			<td>
@@ -181,6 +183,8 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение" onclick="textSelection_1_3('[tag:img]','');">[tag:img]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение активное, в конце названия изображения должно быть _act" onclick="textSelection_1_3('[tag:linkid]','');">[tag:img_act]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_1_3('[tag:img_id]','');">[tag:img_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS ID" onclick="textSelection_1_3('[tag:css_id]','');">[tag:css_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS Class" onclick="textSelection_1_3('[tag:css_class]','');">[tag:css_class]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Место вставки подуровня" onclick="textSelection_1_3('[tag:level:2]','');">[tag:level:2]</a></strong>
 			</td>
 			<td><div class="pr12"><textarea style="width:100%" name="level1_active" rows="12" id="level1_active">{$navigation->level1_active|escape}</textarea></div></td>
@@ -269,6 +273,8 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение" onclick="textSelection_2_2('[tag:img]','');">[tag:img]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение активное, в конце названия изображения должно быть _act" onclick="textSelection_2_2('[tag:linkid]','');">[tag:img_act]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_2_2('[tag:img_id]','');">[tag:img_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS ID" onclick="textSelection_2_2('[tag:css_id]','');">[tag:css_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS Class" onclick="textSelection_2_2('[tag:css_class]','');">[tag:css_class]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Место вставки подуровня" onclick="textSelection_2_2('[tag:level:3]','');">[tag:level:3]</a></strong>
 			</td>
 			<td>
@@ -310,6 +316,8 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение" onclick="textSelection_2_3('[tag:img]','');">[tag:img]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение активное, в конце названия изображения должно быть _act" onclick="textSelection_2_3('[tag:linkid]','');">[tag:img_act]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_2_3('[tag:img_id]','');">[tag:img_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS ID" onclick="textSelection_2_3('[tag:css_id]','');">[tag:css_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS Class" onclick="textSelection_2_3('[tag:css_class]','');">[tag:css_class]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Место вставки подуровня" onclick="textSelection_2_3('[tag:level:3]','');">[tag:level:3]</a></strong>
 			</td>
 			<td><div class="pr12"><textarea style="width:100%" name="level2_active" rows="12" id="level2_active">{$navigation->level2_active|escape}</textarea></div></td>
@@ -395,7 +403,9 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Описание пункта меню" onclick="textSelection_3_2('[tag:desc]','');">[tag:desc]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение" onclick="textSelection_3_2('[tag:img]','');">[tag:img]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение активное, в конце названия изображения должно быть _act" onclick="textSelection_3_2('[tag:linkid]','');">[tag:img_act]</a></strong><br />
-				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_3_2('[tag:img_id]','');">[tag:img_id]</a></strong>
+				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_3_2('[tag:img_id]','');">[tag:img_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS ID" onclick="textSelection_3_2('[tag:css_id]','');">[tag:css_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS Class" onclick="textSelection_3_2('[tag:css_class]','');">[tag:css_class]</a></strong>
 			</td>
 			<td><div class="pr12"><textarea style="width:100%" name="level3" rows="12" id="level3">{$navigation->level3|escape}</textarea></div></td>
 		</tr>
@@ -433,7 +443,9 @@
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Описание пункта меню" onclick="textSelection_3_3('[tag:desc]','');">[tag:desc]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение" onclick="textSelection_3_3('[tag:img]','');">[tag:img]</a></strong><br />
 				<strong><a class="rightDir"  style="cursor: pointer;" title="Изображение активное, в конце названия изображения должно быть _act" onclick="textSelection_3_3('[tag:linkid]','');">[tag:img_act]</a></strong><br />
-				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_3_3('[tag:img_id]','');">[tag:img_id]</a></strong>
+				<strong><a class="rightDir"  style="cursor: pointer;" title="Id изображения" onclick="textSelection_3_3('[tag:img_id]','');">[tag:img_id]</a></strong><br/>
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS ID" onclick="textSelection_3_3('[tag:css_id]','');">[tag:css_id]</a></strong><br />
+				<strong><a class="rightDir"  style="cursor: pointer;" title="CSS Class" onclick="textSelection_3_3('[tag:css_class]','');">[tag:css_class]</a></strong>
 			</td>
 			<td><div class="pr12"><textarea style="width:100%" name="level3_active" rows="12" id="level3_active">{$navigation->level3_active|escape}</textarea></div></td>
 		</tr>
@@ -497,7 +509,7 @@
 
 	function Response(data){ldelim}
 		$.alerts._overlay('hide');
-		$.jGrowl(data['message'], {ldelim} 
+		$.jGrowl(data['message'], {ldelim}
 			header: data['header'],
 			theme: data['theme']
 		{rdelim});

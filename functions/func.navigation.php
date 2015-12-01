@@ -262,18 +262,29 @@ function printNavi($navi_menu, $navi_items, $navi_active_way, $navi_item_tpl, $p
 			@$row['image_act'] = $img[0]."_act.".$img[1];
 			@$item = str_replace('[tag:img_act]', stripslashes($row['image_act']), $item);
 		}
+
 		if ($row['css_id'] != '')
 		{
 			@$item = str_replace('[tag:css_id]', stripslashes($row['css_id']), $item);
+		}
+		else
+		{
+			@$item = str_replace('[tag:css_id]', '', $item);
 		}
 
 		if ($row['css_class'] != '')
 		{
 			@$item = str_replace('[tag:css_class]', stripslashes($row['css_class']), $item);
 		}
+		else
+		{
+			@$item = str_replace('[tag:css_class]', '', $item);
+		}
 
+		// Удаляем ошибочные теги
+		@$item = preg_replace('/\[tag:([a-zA-Z0-9-_]+)\]/', '', $item);
 
-		################### /ПАРСИМ ТЕГИ ##################
+		################### //ПАРСИМ ТЕГИ ##################
 
 		// Определяем тег для вставки следующего уровня
 		switch ($navi_item_level)
@@ -318,7 +329,6 @@ function printNavi($navi_menu, $navi_items, $navi_active_way, $navi_item_tpl, $p
 	}
 
 	// Возвращаем сформированный уровень
-
 	return $navi;
 }
 

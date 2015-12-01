@@ -146,8 +146,8 @@
 			<tr>
 				<td colspan="2">
 					<select name="target" id="target" style="width: 100%;">
-						<option value="_self" selected="selected">{#NAVI_OPEN_IN_THIS#}</option>
-						<option value="_blank" selected="selected">{#NAVI_OPEN_IN_NEW#}</option>
+						<option value="_self">{#NAVI_OPEN_IN_THIS#}</option>
+						<option value="_blank">{#NAVI_OPEN_IN_NEW#}</option>
 					</select>
 				</td>
 			</tr>
