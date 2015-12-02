@@ -24,7 +24,7 @@ $(document).ready(function(){ldelim}
 		jPrompt(text, '', title, function(b){ldelim}
 					if (b){ldelim}
 						$.alerts._overlay('show');
-						window.location = href + '&navigation_title_new=' + b;
+						window.location = href + '&title=' + b;
 					{rdelim}
 				{rdelim}
 			);
