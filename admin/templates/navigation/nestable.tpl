@@ -5,7 +5,7 @@
 			<div class="dd-handle dd3-handle"></div>
 			<div class="dd3-content{if $item.status == 0} red{/if}">
 				<div class="name">
-					<a href="index.php?do=navigation&action=itemedit&sub=edit&navigation_item_id={$item.navigation_item_id}&cp={$sess}&pop=1" data-width="400px" data-modal="true" data-dialog="item-{$item.navigation_item_id}" title="Редактировать пункт меню" class="openDialog topDir">{$item.title}</a>
+					<a href="index.php?do=navigation&action=itemedit&sub=edit&navigation_item_id={$item.navigation_item_id}&cp={$sess}&pop=1" data-title="{#NAVI_ITEM_EDIT#}" data-width="400px" data-modal="true" data-dialog="item-{$item.navigation_item_id}" title="{#NAVI_ITEM_EDIT#}" class="openDialog topDir">{$item.title}</a>
 				</div>
 
 				<div class="url">
@@ -22,15 +22,15 @@
 
 				<div class="status">
 					{if $item.status == 1}
-					<a href="index.php?do=navigation&action=itemestatus&navigation_item_id={$item.navigation_item_id}&cp={$sess}" data-status="0" class="topleftDir icon_sprite ico_ok_green changeStatus" title="Вкл/Выкл пункт меню"></a>
+					<a href="index.php?do=navigation&action=itemestatus&navigation_item_id={$item.navigation_item_id}&cp={$sess}" data-status="0" class="topleftDir icon_sprite ico_ok_green changeStatus" title="{#NAVI_ITEM_ON_OFF#}"></a>
 					{else}
-					<a href="index.php?do=navigation&action=itemestatus&navigation_item_id={$item.navigation_item_id}&cp={$sess}" data-status="1" class="topleftDir icon_sprite ico_delete_no changeStatus" title="Вкл/Выкл пункт меню"></a>
+					<a href="index.php?do=navigation&action=itemestatus&navigation_item_id={$item.navigation_item_id}&cp={$sess}" data-status="1" class="topleftDir icon_sprite ico_delete_no changeStatus" title="{#NAVI_ITEM_ON_OFF#}"></a>
 					{/if}
 				</div>
 
 				<div class="action">
-					<a href="index.php?do=navigation&action=itemedit&sub=edit&navigation_item_id={$item.navigation_item_id}&cp={$sess}&pop=1" data-width="400px" data-modal="true" data-dialog="item-{$item.navigation_item_id}" title="Редактировать пункт меню" class="openDialog topleftDir icon_sprite ico_edit"></a>
-					<a href="index.php?do=navigation&action=itemedel&navigation_item_id={$item.navigation_item_id}&cp={$sess}" class="topleftDir ConfirmDelete icon_sprite ico_delete" title="Удалить пункт меню"></a>
+					<a href="index.php?do=navigation&action=itemedit&sub=edit&navigation_item_id={$item.navigation_item_id}&cp={$sess}&pop=1" data-width="400px" data-modal="true" data-dialog="item-{$item.navigation_item_id}" data-title="{#NAVI_ITEM_EDIT#}" title="{#NAVI_ITEM_EDIT#}" class="openDialog topleftDir icon_sprite ico_edit"></a>
+					<a href="index.php?do=navigation&action=itemdelete&navigation_item_id={$item.navigation_item_id}&cp={$sess}" class="topleftDir ConfirmDelete icon_sprite ico_delete" title="{#NAVI_ITEM_DELETE#}"dir="{#NAVI_ITEM_DELETE#}" name="{#NAVI_ITEM_DELETE_CONFIRM#}"></a>
 				</div>
 			</div>
 		{include file="$nestable_tpl" items=$item.children level=$level+1}

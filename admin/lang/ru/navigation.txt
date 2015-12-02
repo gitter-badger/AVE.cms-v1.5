@@ -86,4 +86,9 @@ NAVI_REPORT_ACT	 	  = "Активировал пункт меню навигац
 NAVI_REPORT_SAVED		= "Шаблон навигации успешно сохранен"
 NAVI_REPORT_SAVED_ERR	= "Не удалось шаблон навигации.<br />Попробуйте еще раз."
 NAVI_REPORT_ERROR		= "Ошибка"
-NAVI_REPORT_SUCCESS		= "Выполнено"
+NAVI_REPORT_SUCCESS     = "Выполнено"
+
+NAVI_ITEM_ON_OFF		= "Вкл/Выкл пункт меню"
+NAVI_ITEM_EDIT             = "Редактировать пункт меню"
+NAVI_ITEM_DELETE           = "Удалить данный пункт меню"
+NAVI_ITEM_DELETE_CONFIRM   = "Вы уверены, что хотите удалить данный пукт меню навигации?"

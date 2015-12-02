@@ -118,5 +118,12 @@ switch ($_REQUEST['action'])
 			$AVE_Navigation->navigationItemGet((int)$_REQUEST['navigation_item_id']);
 		}
 		break;
+
+	case 'itemdelete':
+		if (check_permission_acp('navigation_edit'))
+		{
+			$AVE_Navigation->navigationItemDelete((int)$_REQUEST['navigation_item_id']);
+		}
+		break;
 }
 ?>

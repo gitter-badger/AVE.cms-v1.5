@@ -693,11 +693,12 @@ class AVE_Navigation
 	 *
 	 * @param int $document_id идентификатор удаляемого документа
 	 */
-	function navigationItemDelete($document_id)
+	function navigationItemDeleteFromDoc($document_id)
 	{
 		global $AVE_DB, $AVE_Template;
 
-		$document_id = (int)$document_id;
+		if (!is_numeric($document_id))
+			return;
 
 		// Выполняем запрос к БД и получаем ID пункта меню, с которым связан документ
 		$sql = $AVE_DB->Query("
@@ -714,16 +715,15 @@ class AVE_Navigation
 			// Выполняем запрос к БД для определения у удаляемого пункта подпунктов
 			$num = $AVE_DB->Query("
 				SELECT
-					navigation_item_id
+					COUNT(1)
 				FROM
 					" . PREFIX . "_navigation_items
 				WHERE
 					parent_id = '" . $row->navigation_item_id . "'
-				LIMIT 1
-			")->NumRows();
+			")->GetCell();
 
 			// Если данный пункт имеет подпункты, тогда
-			if ($num == 1)
+			if ($num > 0)
 			{
 				// Выполняем запрос к БД и деактивируем пункт меню
 				$AVE_DB->Query("
@@ -757,9 +757,82 @@ class AVE_Navigation
 	}
 
 
-	function navigationItemSave()
+	/**
+	 * Метод, предназначенный для удаления пункта меню навигации в Панели управления
+	 *
+	 * @param int $navigation_item_id идентификатор меню навигации
+	 */
+	function navigationItemDelete($navigation_item_id)
 	{
-		Debug::_print($_REQUEST, true);
+		global $AVE_DB, $AVE_Template;
+
+		if (!is_numeric($navigation_item_id))
+			return;
+
+		// Выполняем запрос к БД для определения у удаляемого пункта подпунктов
+		$num = $AVE_DB->Query("
+			SELECT
+				COUNT(1)
+			FROM
+				" . PREFIX . "_navigation_items
+			WHERE
+				parent_id = '" . $navigation_item_id . "'
+		")->GetCell();
+
+		// Если данный пункт имеет подпункты, тогда
+		if ($num > 0)
+		{
+			$sql = $AVE_DB->Query("
+				SELECT
+					*
+				FROM
+					" . PREFIX . "_navigation_items
+				WHERE
+					navigation_item_id = '" . $navigation_item_id . "'
+				LIMIT 1
+			")->FetchRow();
+
+			// Выполняем запрос к БД и деактивируем пункт меню
+			$AVE_DB->Query("
+				UPDATE
+					" . PREFIX . "_navigation_items
+				SET
+					status = '0'
+				WHERE
+					navigation_item_id = '" . $navigation_item_id . "'
+			");
+
+			// Сохраняем системное сообщение в журнал
+			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DEACT') . " (" . stripslashes($sql->title) . ") (id: $navigation_item_id)");
+		}
+		else
+		{
+			// В противном случае, если данный пункт не имеет подпунктов, тогда
+			$sql = $AVE_DB->Query("
+				SELECT *
+				FROM
+					" . PREFIX . "_navigation_items
+				WHERE
+					navigation_item_id = '" . $navigation_item_id . "'
+				LIMIT 1
+			")->FetchRow();
+
+			// Выполняем запрос к БД и удаляем помеченный пункт
+			$AVE_DB->Query("
+				DELETE
+				FROM
+					" . PREFIX . "_navigation_items
+				WHERE
+					navigation_item_id = '" . $navigation_item_id . "'
+			");
+
+			// Сохраняем системное сообщение в журнал
+			reportLog($AVE_Template->get_config_vars('NAVI_REPORT_DELIT') . " (" . stripslashes($sql->title) . ") (id: $navigation_item_id)");
+		}
+
+		// Выполняем обновление страницы
+		header('Location:' . get_referer_admin_link());
+		exit;
 	}
 
 
@@ -873,8 +946,9 @@ class AVE_Navigation
 
 		if ($item['document_id'])
 			$doc_info = get_document((int)$item['document_id']);
-			$item['document_title'] = (($doc_info['document_breadcrum_title']) ? $doc_info['document_breadcrum_title'] : $doc_info['document_title']);
-			$item['document_alias'] = $doc_info['document_alias'];
+
+		$item['document_title'] = (($doc_info['document_breadcrum_title']) ? $doc_info['document_breadcrum_title'] : $doc_info['document_title']);
+		$item['document_alias'] = $doc_info['document_alias'];
 
 		$AVE_Template->assign('item', $item);
 		$AVE_Template->assign('content', $AVE_Template->fetch('navigation/item.tpl'));

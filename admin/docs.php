@@ -150,7 +150,7 @@ switch($_REQUEST['action'])
 	case 'enddelete':
 		if (check_permission_acp('alles'))
 		{
-			$AVE_Navigation->navigationItemDelete((int)$_REQUEST['Id']);
+			$AVE_Navigation->navigationItemDeleteFromDoc((int)$_REQUEST['Id']);
 			$AVE_Document->documentDelete((int)$_REQUEST['Id']);
 			// Выполняем обновление страницы
 			header('Location:index.php?do=docs&cp=' . SESSION);
