@@ -2,7 +2,7 @@ $().ready(function() {
 
 	// отдельный файловый менеджер
 	$('#finder').elfinder({
-		url : ave_path+'admin/redactor/elfinder/php/connector.php',
+		url : ave_path+'lib/redactor/elfinder/php/connector.php',
 		lang : 'ru',
 		height : 500,
 		title : 'Файловый менеджер'
@@ -13,7 +13,7 @@ $().ready(function() {
 	$('.dialog_images').click(function() {
 		var id = $(this).attr("rel");
 		$('<div/>').dialogelfinder({
-			url : ave_path+'admin/redactor/elfinder/php/connector.php',
+			url : ave_path+'lib/redactor/elfinder/php/connector.php',
 			lang : 'ru',
 			width : 1100,
 			height: 600,
@@ -32,7 +32,7 @@ $().ready(function() {
 			}
 		})
 	});
-	
+
 	$('#elFinder a').hover(
 		function () {
 			$('#elFinder a').animate({
@@ -44,11 +44,11 @@ $().ready(function() {
 				'background-position' : '0 0'
 			}, 300);
 		}
-	);		
+	);
 	$('#elRTE a').delay(800).animate({'background-position' : '0 0'}, 300);
 
-	// нормальный редактор	
-	var opt = {			
+	// нормальный редактор
+	var opt = {
 		cssClass : 'el-rte',
 		toolbars :  {
 			apanel : ['format', 'save', 'copypaste', 'undoredo', 'style', 'alignment', 'lists', 'links', 'images', 'fullscreen']
@@ -57,12 +57,12 @@ $().ready(function() {
 		lang     : 'ru',
 		allowTextNodes : 'true',
 		height   : 500,
-		cssfiles : [ave_path+'admin/redactor/elrte/css/elrte-inner.css'],	
+		cssfiles : [ave_path+'lib/redactor/elrte/css/elrte-inner.css'],
 		fmOpen : function(callback) {
 	       $('<div />').dialogelfinder({
-	          url : ave_path+'admin/redactor/elfinder/php/connector.php',
+	          url : ave_path+'lib/redactor/elfinder/php/connector.php',
 	          lang : 'ru',
-	          width : 1100, 
+	          width : 1100,
 	          height : 500,
 	          title : 'Файловый менеджер',
 	          commandsOptions : {
@@ -90,8 +90,8 @@ $().ready(function() {
 		lang     : 'ru',
 		allowTextNodes : 'true',
 		height   : 250,
-		cssfiles : [ave_path+'admin/redactor/elrte/css/elrte-inner.css']
+		cssfiles : [ave_path+'lib/redactor/elrte/css/elrte-inner.css']
 	};
 	$('.small-editor').elrte(opts);
-		
+
 });
