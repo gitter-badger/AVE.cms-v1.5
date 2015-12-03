@@ -923,7 +923,8 @@ class AVE_Document
 		if ($oper == 'INSERT' && !( (isset($_SESSION[$rubric_id . '_newnow'])  && $_SESSION[$rubric_id . '_newnow'] == 1)
 			|| (isset($_SESSION[$rubric_id . '_new'])   && $_SESSION[$rubric_id . '_new']    == 1)
 			|| (isset($_SESSION[$rubric_id . '_alles']) && $_SESSION[$rubric_id . '_alles']  == 1)
-			|| (defined('UGROUP') && UGROUP == 1) )) return false;
+			|| (defined('UGROUP') && UGROUP == 1) ))
+			return false;
 
 		if($oper == 'UPDATE')
 		{
@@ -932,8 +933,10 @@ class AVE_Document
 					SELECT
 						rubric_id,
 						document_author_id
-					FROM " . PREFIX . "_documents
-					WHERE Id = '" . $document_id . "'
+					FROM
+						" . PREFIX . "_documents
+					WHERE
+						Id = '" . $document_id . "'
 				")->FetchRow();
 
 				$rubric_id = $row->rubric_id;
@@ -953,7 +956,7 @@ class AVE_Document
 				}
 
 				// запрещаем редактирование главной страницы и страницы ошибки 404 если требуется одобрение Администратора
-				if ( ($document_id == 1 || $document_id == PAGE_NOT_FOUND_ID) && @$_SESSION[$row->rubric_id . '_newnow'] != 1 )
+				if ( ($document_id == 1 || $document_id == PAGE_NOT_FOUND_ID) && @$_SESSION[$row->rubric_id . '_editall'] != 1 )
 				{
 					$row->cantEdit = 0;
 				}
@@ -966,13 +969,29 @@ class AVE_Document
 				}
 
 				//выходим если нельзя редактировать
-				if(!$row->cantEdit==1 ) return false;
+				if(! $row->cantEdit==1 )
+					return false;
 
 					// Обрабатываем все данные, пришедшие в запросе
 					$search = (isset($data['document_in_search']) && $data['document_in_search'] == 1) ? '1' : '0';
-					$document_status = ( (isset($_SESSION[$row->rubric_id . '_newnow']) && $_SESSION[$row->rubric_id . '_newnow'] == 1)
-								|| (isset($_SESSION[$row->rubric_id . '_alles']) && $_SESSION[$row->rubric_id . '_alles'] == 1)
-								|| (defined('UGROUP') && UGROUP == 1) ) ? (isset($data['document_status']) ? $data['document_status'] : '0') : '0';
+
+					if (
+						(isset($_SESSION[$row->rubric_id . '_newnow']) && $_SESSION[$row->rubric_id . '_newnow'] == 1)
+						||
+						(isset($_SESSION[$row->rubric_id . '_editall']) && $_SESSION[$row->rubric_id . '_editall'] == 1)
+						||
+						(isset($_SESSION[$row->rubric_id . '_alles']) && $_SESSION[$row->rubric_id . '_alles'] == 1)
+						||
+						(defined('UGROUP') && UGROUP == 1)
+					)
+					{
+						$document_status = (isset($data['document_status']) ? $data['document_status'] : '0');
+					}
+					else
+					{
+						$document_status = '0';
+					}
+
 					$document_status = ($document_id == 1 || $document_id == PAGE_NOT_FOUND_ID) ? '1' : $document_status;
 
 					// Формируем/проверяем адрес на уникальность
@@ -1003,7 +1022,8 @@ class AVE_Document
 				else
 				{
 					$search = (isset($data['document_in_search']) && $data['document_in_search'] == 1) ? 1 : 0;
-					$document_status = !empty($data['document_status']) ? (int)$data['document_status'] : '0';
+
+					$document_status = ! empty($data['document_status']) ? (int)$data['document_status'] : '0';
 					$document_status = ($document_id == 1 || $document_id == PAGE_NOT_FOUND_ID) ? '1' : $document_status;
 
 					$data['document_alias'] = $_url = prepare_url(empty($data['document_alias']) ? trim($data['prefix'] . '/' . $data['doc_title'], '/') : $data['document_alias']);
@@ -1115,7 +1135,7 @@ class AVE_Document
 						$AVE_DB->Query($sql);
 
 					// Сохраняем ревизию документа
-					if ($oper == 'UPDATE' && $revision)
+					if ($oper == 'UPDATE' && $revisions)
 						$this->SaveRevission($document_id);
 
 					// Получаем id добавленной записи
@@ -1614,7 +1634,7 @@ class AVE_Document
 
 				// запрещаем доступ к главной странице и странице ошибки 404, если требуется одобрение Администратора
 				if ( ($document_id == 1 || $document_id == PAGE_NOT_FOUND_ID) &&
-					!(isset($_SESSION[$document->rubric_id . '_newnow']) && $_SESSION[$document->rubric_id . '_newnow'] == 1) )
+					!(isset($_SESSION[$document->rubric_id . '_editall']) && $_SESSION[$document->rubric_id . '_editall'] == 1) )
 				{
 					$show = false;
 				}
@@ -1630,8 +1650,12 @@ class AVE_Document
 				{
 					$fields = array();
 
-					if ( (defined('UGROUP') && UGROUP == 1)
-						|| (isset($_SESSION[$document->rubric_id . '_newnow']) && $_SESSION[$document->rubric_id . '_newnow'] == 1) )
+					if (
+						(defined('UGROUP') && UGROUP == 1)
+						|| (isset($_SESSION[$document->rubric_id . '_newnow']) && $_SESSION[$document->rubric_id . '_newnow'] == 1)
+						|| (isset($_SESSION[$document->rubric_id . '_editall']) && $_SESSION[$document->rubric_id . '_editall'] == 1)
+						|| (isset($_SESSION[$document->rubric_id . '_editown']) && $_SESSION[$document->rubric_id . '_editown'] == 1)
+					)
 					{
 						$document->dontChangeStatus = 0;
 					}
