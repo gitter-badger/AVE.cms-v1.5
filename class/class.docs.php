@@ -26,6 +26,7 @@ class AVE_Document
 	 *
 	 */
 	public $_limit = 25;
+	public $_max_remark_length = 500;
 
 /**
  *	Внутренние методы класса
@@ -2862,8 +2863,10 @@ class AVE_Document
 			// Выполянем запрос к БД и удалаем заметки
 			$AVE_DB->Query("
 				DELETE
-				FROM " . PREFIX . "_document_remarks
-				WHERE document_id = '" . $document_id . "'
+				FROM
+					" . PREFIX . "_document_remarks
+				WHERE
+					document_id = '" . $document_id . "'
 			");
 
 			// Выполняем обновление страницы
@@ -2872,14 +2875,18 @@ class AVE_Document
 		}
 		else
 		{
-			if (!(isset($_REQUEST['CId']) && is_numeric($_REQUEST['CId']) && $_REQUEST['CId'] > 0)) exit;
+			if (!(isset($_REQUEST['CId']) && is_numeric($_REQUEST['CId']) && $_REQUEST['CId'] > 0))
+				exit;
 
 			// В противном случае, выполняем запрос к БД и удаляем только ту заметку, которая была выбрана
 			$AVE_DB->Query("
 				DELETE
-				FROM " . PREFIX . "_document_remarks
-				WHERE document_id = '" . $document_id . "'
-				AND Id = '" . $_REQUEST['CId'] . "'
+				FROM
+					" . PREFIX . "_document_remarks
+				WHERE
+					document_id = '" . $document_id . "'
+				AND
+					Id = '" . $_REQUEST['CId'] . "'
 			");
 
 			// Выполняем обновление страницы

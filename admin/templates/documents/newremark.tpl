@@ -25,7 +25,7 @@
 						<div class="infoRow">
 							<span class="name"><strong>{$answer.remark_author}</strong> пишет: <strong>{$answer.remark_title}</strong></span>
 							{if check_permission("remark_edit")}
-							<a href="index.php?do=docs&action=remark_del&Id={$smarty.request.Id|escape}&CId={$answer.Id}&remark_first={$answer.remark_first}&pop=1&cp={$sess}" title="{#DOC_NOTICE_DELETE_LINK#}" class="topDir icon_sprite ico_delete floatright"></a>
+							<a href="index.php?do=docs&action=remark_del&Id={$smarty.request.Id|escape}&CId={$answer.Id}&pop=1&cp={$sess}" title="{#DOC_NOTICE_DELETE_LINK#}" class="topDir icon_sprite ico_delete floatright"></a>
 							{else}
 							<span class="icon_sprite ico_delete_no floatright"></span>
 							{/if}

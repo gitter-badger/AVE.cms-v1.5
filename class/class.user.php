@@ -44,7 +44,6 @@ class AVE_User
 		'navigation_view', 'navigation_edit',																	// навигация
 		'sysblocks_view', 'sysblocks_edit',																		// системные блоки
 		'modules_view', 'modules_admin', 'modules_system',														// модули
-		'ledit_liveeditor',																						// настройки LiveEditor
 		'mediapool_int', 'mediapool_add', 'mediapool_del', 'mediapool_finder',									// файловый менеджер
 		'gen_settings', 'gen_settings_more', 'gen_settings_countries', 'gen_settings_languages',				// общие настройки
 		'db_actions',																							// база данных
@@ -353,7 +352,7 @@ class AVE_User
 			");
 
 		}
-		
+
 		if ($sql->_result === false) {
 			$message = $AVE_Template->get_config_vars('UGROUP_SAVED_ERR');
 			$header = $AVE_Template->get_config_vars('UGROUP_ERROR');
@@ -678,9 +677,9 @@ class AVE_User
 					}
 
 					$user_group_set = ($_SESSION['user_id'] != $user_id) ? "user_group = '" . $_REQUEST['user_group'] . "'," : '';
-					
+
 					$times = ($_REQUEST['deleted'] == "1") ? time() : '';
-					
+
 					if(is_uploaded_file($_FILES["avatar"]["tmp_name"]))
 					{
 						// Если файл загружен успешно, перемещаем его
@@ -689,7 +688,7 @@ class AVE_User
 						move_uploaded_file($_FILES["avatar"]["tmp_name"],$newf_n);
 						SetAvatar($user_id,$newf_n);
 					}
-					   
+
 					$AVE_DB->Query("
 						UPDATE " . PREFIX . "_users
 						SET
@@ -750,7 +749,7 @@ class AVE_User
 							$AVE_Template->get_config_vars('USER_MAIL_SUBJECT'),
 							get_settings('mail_from'),
 							get_settings('mail_from_name') . ' (' . get_settings('site_name') . ')',
-							'text'							
+							'text'
 						);
 					}
 
@@ -771,7 +770,7 @@ class AVE_User
 							$AVE_Template->get_config_vars('USER_MAIL_PASSWORD'),
 							get_settings('mail_from'),
 							get_settings('mail_from_name') . ' (' . get_settings('site_name') . ')',
-							'text'							
+							'text'
 						);
 					}
 
@@ -783,7 +782,7 @@ class AVE_User
 							stripslashes($_POST['SubjectMessage']),
 							$_SESSION['user_email'],
 							$_SESSION['user_name'],
-							'text'							
+							'text'
 						);
 					}
 

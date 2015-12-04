@@ -23,7 +23,7 @@
 		<tr>
 			<td colspan="2">
 				<input type="submit" class="basicBtn" value="{#DOC_BUTTON_ADD_NOTICE#}" />
-				<a name="comment"></a>
+				<a href="index.php?do=docs&action=remark_del&Id={$smarty.request.Id|escape}&CId={$answer.Id}&remark_first={$answer.remark_first}&pop=1&cp={$sess}" class="btn redBtn floatright">{#DOC_NOTICE_DELETE_ALL#}</a>
 			</td>
 		</tr>
 	</table>

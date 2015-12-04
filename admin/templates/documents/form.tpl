@@ -6,17 +6,17 @@
 
 {if $smarty.session.use_editor == 1}
 	<!-- elrte -->
-	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/redactor/elrte/css/elrte.full.css" type="text/css" media="screen" />
-	<script src="{$ABS_PATH}lib/redactor/redactor/elrte/js/elrte.full.js" type="text/javascript"></script>
-	<script src="{$ABS_PATH}lib/redactor/redactor/elrte/js/i18n/elrte.ru.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/elrte/css/elrte.full.css" type="text/css" media="screen" />
+	<script src="{$ABS_PATH}lib/redactor/elrte/js/elrte.full.js" type="text/javascript"></script>
+	<script src="{$ABS_PATH}lib/redactor/elrte/js/i18n/elrte.ru.js" type="text/javascript"></script>
 
 	<!-- elfinder -->
-	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/redactor/elfinder/css/elfinder.full.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/redactor/elfinder/css/theme.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/elfinder/css/elfinder.full.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="{$ABS_PATH}lib/redactor/elfinder/css/theme.css" type="text/css" media="screen" />
 
-	<script src="{$ABS_PATH}lib/redactor/redactor/elfinder/js/elfinder.full.js" type="text/javascript"></script>
-	<script src="{$ABS_PATH}lib/redactor/redactor/elfinder/js/i18n/elfinder.ru.js" type="text/javascript"></script>
-	<script src="{$ABS_PATH}lib/redactor/redactor/elfinder/js/jquery.dialogelfinder.js" type="text/javascript"></script>
+	<script src="{$ABS_PATH}lib/redactor/elfinder/js/elfinder.full.js" type="text/javascript"></script>
+	<script src="{$ABS_PATH}lib/redactor/elfinder/js/i18n/elfinder.ru.js" type="text/javascript"></script>
+	<script src="{$ABS_PATH}lib/redactor/elfinder/js/jquery.dialogelfinder.js" type="text/javascript"></script>
 
 	<script type="text/javascript" src="{$tpl_dir}/js/rle.js"></script>
 {/if}
