@@ -1,6 +1,8 @@
 # AVE.cms 3.0 v1.5
 ###### Многофункциональная, система управления сайтом.
 
+[![Join the chat at https://gitter.im/iDenn/AVE.cms-v1.5](https://badges.gitter.im/iDenn/AVE.cms-v1.5.svg)](https://gitter.im/iDenn/AVE.cms-v1.5?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ![AVE.cms](http://ave-cms.ru/pics/1_1.png "AVE.cms")
 
 
